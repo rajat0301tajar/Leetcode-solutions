@@ -1,0 +1,25 @@
+struct ListNode{
+   int data;
+   ListNode * down;
+   ListNode * right;
+};
+//1 --> 2 --> 3 --> NULL 
+ListNode * flattenList(ListNode * head){
+	if(head == NULL){
+		return NULL;
+	}
+	ListNode *head1 = flattenList(head->down);
+	ListNode *tail = head1;
+	while(tail && tail->right != NULL){
+		tail= tail->right;
+	}
+	ListNode *head2 = flattenList(head->right);
+	if(tail){
+		tail->right = head2;
+		head->right = head1;
+	}
+	else if(head2){
+		head->right = head2;
+	}
+	return head;
+}
