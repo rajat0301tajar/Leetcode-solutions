@@ -8,6 +8,27 @@ Output: true
 Explanation: Convert 'c' to 'e' then 'b' to 'd' then 'a' to 'c'. Note that the order of conversions matter.
 
 -----------------------------------------------------------------------------------------------------------------------
+APPROACH :
+/*Scan s1 and s2 at the same time,
+record the transform mapping into a map/array.
+The same char should transform to the same char.
+Otherwise we can directly return false.
+
+To realise the transformation:
+
+    transformation of link link ,like a -> b -> c:
+    we do the transformation from end to begin, that is b->c then a->b
+
+    transformation of cycle, like a -> b -> c -> a:
+    in this case we need a tmp
+    c->tmp, b->c a->b and tmp->a
+    Same as the process of swap two variable.
+
+In both case, there should at least one character that is unused,
+to use it as the tmp for transformation.
+So we need to return if the size of set of unused characters < 26.
+*/
+
 
 class Solution {
 public:
