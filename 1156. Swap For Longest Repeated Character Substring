@@ -1,0 +1,75 @@
+Given a string text, we are allowed to swap two of the characters in the string. Find the length of the longest substring with repeated characters.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class Solution {
+public:
+    int maxRepOpt1(string text) {
+        map<char,int>fidx; // for each char stores  first, last  index.
+        map<char,int>bidx;
+        int n = text.size();
+        vector<int>f(n,0);
+        vector<int>b(n,0);
+        for(int i = 0; i < n; i++){
+            if(fidx.count(text[i]) == 0){
+                fidx[text[i]] = i;
+            }
+        }
+        for(int i = n - 1; i >= 0; i--){
+            if(bidx.count(text[i]) == 0){
+                bidx[text[i]] = i;
+            }
+        }
+        f[0] = 1; char ref = text[0];
+        int i = 1;
+        while(i < n){
+            if(text[i] == ref){
+                f[i] = f[i - 1] + 1;
+            }
+            else
+                f[i] = 1;
+            ref = text[i];
+            i++;
+            
+        }
+        b[n - 1] = 1; ref = text[n - 1];
+        i = n - 2;
+        while(i >= 0){
+            if(text[i] == ref){
+                b[i] = 1 + b[i + 1];
+            }
+            else 
+                b[i] = 1;
+            ref = text[i];
+            i--;
+            
+        }
+        for(int i = 0; i < n; i++){
+            cout<<f[i]<<" ";
+        }
+        cout<<endl;
+        for(int i = 0; i < n; i++){
+            cout<<b[i]<<" ";
+        }
+        int ans = *max_element(f.begin(),f.end());
+        for(int i = 1; i < n - 1; i++){
+            int front = f[i - 1];
+            int back = b[i + 1];
+            int l = i - front - 1 ;
+            int r = i + back  + 1  ;
+            if(text[i - 1] == text[i + 1] && ((l >= 0 && fidx[text[i - 1]] <= l) || (r < n && bidx[text[i + 1]] >= r))){
+                ans = max(ans, front + back + 1);
+            }
+            else if(text[i - 1] == text[i + 1] && (l < 0 && r >= n)){
+                ans = max(ans, front + back );
+            }
+            if(text[i - 1] != text[i + 1] && ((fidx[text[i - 1]] <= l) || (bidx[text[i - 1]] >= r))){
+                ans = max(ans, front + 1);
+            }
+            if(text[i - 1] != text[i + 1] && ((bidx[text[i + 1]] >= r) || (fidx[text[i + 1]] <= l))){
+                ans = max(ans, back + 1);
+            }
+        }
+        return ans;
+    }
+};
