@@ -1,0 +1,65 @@
+Given an undirected graph, return true if and only if it is bipartite.
+
+Recall that a graph is bipartite if we can split it's set of nodes into two independent subsets A and B such that every edge in the graph has one node in A and another node in B.
+
+The graph is given in the following form: graph[i] is a list of indexes j for which the edge between nodes i and j exists.  Each node is an integer between 0 and graph.length - 1.  There are no self edges or parallel edges: graph[i] does not contain i, and it doesn't contain any element twice.
+
+Example 1:
+Input: [[1,3], [0,2], [1,3], [0,2]]
+Output: true
+Explanation: 
+The graph looks like this:
+0----1
+|    |
+|    |
+3----2
+We can divide the vertices into two groups: {0, 2} and {1, 3}.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+class Solution {
+public:
+    vector<vector<int>>g;
+    void dfs(int u,int color[],int curr_color,bool visit[]){
+        if(visit[u]){
+            return;
+        }
+        visit[u] = true;
+        auto adjU = g[u];
+        for(auto x : adjU){
+            color[x] = 1 - curr_color; 
+            dfs(x, color, color[x], visit);
+        }
+    }
+    bool check(int u,int color[],int curr_color){
+        auto adjU = g[u];
+        for(auto x : adjU){
+            if(color[x] == -1 || color[x] == curr_color){
+                return false;
+            }
+        }
+        return true;
+    }
+    bool isBipartite(vector<vector<int>>& graph) {
+        this->g = graph;
+        int n = g.size();
+        int color[n];
+        memset(color,-1,sizeof(color));
+        color[0] = 0; // black
+        bool visit[n];
+        memset(visit,false,sizeof(visit));
+        for(int i = 0; i < n; i++){
+            if(!visit[i])
+            dfs(i , color, 0, visit);   
+        }
+        for(int i = 0; i < n; i++){
+            if(color[i] == -1){
+                continue;
+            }
+            if(!check(i, color, color[i])){
+                return false;
+            }
+        }
+        return true;
+    }
+};
