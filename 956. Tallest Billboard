@@ -1,0 +1,45 @@
+You are installing a billboard and want it to have the largest height.  The billboard will have two steel supports, one on each side.  Each steel support must be an equal height.
+
+You have a collection of rods which can be welded together.  For example, if you have rods of lengths 1, 2, and 3, you can weld them together to make a support of length 6.
+
+Return the largest possible height of your billboard installation.  If you cannot support the billboard, return 0.
+
+ 
+
+Example 1:
+
+Input: [1,2,3,6]
+Output: 6
+Explanation: We have two disjoint subsets {1,2,3} and {6}, which have the same sum = 6.
+----------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    int tallestBillboard(vector<int>& rods) {
+        int n=rods.size();
+        bool dp[n+1][10001]; //dp[i][j] true if possible to make sum j using 1st i elements
+        memset(dp,false,sizeof(dp));
+        int mx[n+1][10001]; //max sum of positive numbers using first i elements
+        memset(mx,0,sizeof(mx));
+        dp[0][5000]=true;
+        for(int i=0;i<n;i++){
+            for(int j=0;j<=10000;j++){
+                // if we intend to add rods[i]
+                if(j-rods[i] >=0 && dp[i][j-rods[i]]){
+                    dp[i+1][j]=true;
+                    mx[i+1][j]=max(mx[i+1][j],mx[i][j-rods[i]] + rods[i]);
+                }
+                // if we intend to subtract rods[i]
+                if(j+rods[i] <=10000 && dp[i][j+rods[i]]){
+                    dp[i+1][j]=true;
+                    mx[i+1][j]=max(mx[i+1][j],mx[i][j+rods[i]]);
+                }
+                // if we dont intend to use rods[i]
+                if(dp[i][j]){
+                    dp[i+1][j]=true;
+                    mx[i+1][j]=max(mx[i+1][j],mx[i][j]);
+                }
+            }
+        }
+        return mx[n][5000]; // we want max sum of positive numbers when we consider all elements and when sum of elements is 0 ---> 5000 (in our case to care of negative sum also)
+    }
+};
