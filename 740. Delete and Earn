@@ -1,0 +1,36 @@
+Given an array nums of integers, you can perform operations on the array.
+
+In each operation, you pick any nums[i] and delete it to earn nums[i] points. After, you must delete every element equal to nums[i] - 1 or nums[i] + 1.
+
+You start with 0 points. Return the maximum number of points you can earn by applying such operations.
+
+Example 1:
+
+Input: nums = [3, 4, 2]
+Output: 6
+Explanation: 
+Delete 4 to earn 4 points, consequently 3 is also deleted.
+Then, delete 2 to earn 2 points. 6 total points are earned.
+---------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    int deleteAndEarn(vector<int>& nums) {
+        if(nums.size() == 0){
+            return 0;
+        } 
+        int n = 10001;
+        vector<int>v(n, 0);
+        for(auto x : nums){
+            v[x] += x;
+        }
+        int mx = *max_element(nums.begin(),nums.end());
+        int take[10001],skip[10001];
+        skip[0] = 0;
+        take[0] = v[0];
+        for(int i = 1; i <= mx; i++){
+            take[i] = skip[i - 1] + v[i];
+            skip[i] = max(take[i - 1] , skip[i - 1]);
+        }
+        return max(skip[mx],take[mx]);
+    }
+};
