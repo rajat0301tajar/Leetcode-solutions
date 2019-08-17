@@ -29,8 +29,8 @@ public:
         int dp[v.size()][v.size()];
         memset(dp,0,sizeof(dp));
         for(int l = 1; l <= nums.size(); l++){
-            for(int i = 1; i <= nums.size() - len + 1; i++){
-                int j = i + len - 1;
+            for(int i = 1; i <= nums.size() - l + 1; i++){
+                int j = i + l - 1;
                 for(int last = i; last <= j; last++){
                     dp[i][j]=max(dp[i][j],
                                 dp[i][last-1] + dp[last+1][j] + v[i-1] * v[last] * v[j+1]);
@@ -40,6 +40,7 @@ public:
         return dp[1][nums.size()];
     }
 };
+
 // top down more intuitive.
 public int maxCoins(int[] iNums) {
     int[] nums = new int[iNums.length + 2];
