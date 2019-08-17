@@ -1,0 +1,42 @@
+There is an m by n grid with a ball. Given the start coordinate (i,j) of the ball, you can move the ball to adjacent cell or cross the grid boundary in four directions (up, down, left, right). However, you can at most move N times. Find out the number of paths to move the ball out of grid boundary. The answer may be very large, return it after mod 109 + 7.
+
+ 
+
+Example 1:
+
+Input: m = 2, n = 2, N = 2, i = 0, j = 0
+Output: 6
+----------------------------------------------------------------------------------------------------------------------------------
+MEMOIZATION APPROACH : 
+class Solution {
+public:
+    int dp[51][51][51];
+    int dirs[4][2] = {{-1,0},{0,-1},{1,0},{0,1}};
+    int solve(int x, int y, int m , int n , int steps){
+        
+        if((x < 0 || x >= m || y < 0 || y >= n) && steps >= 0){
+            return 1;
+        }
+        if(steps <= 0 && x >= 0 && x < m && y >= 0 && y < n){
+            return 0;
+        }
+        
+        if(steps < 0)return 0;
+        //cout<<x<<" "<<y<<" "<<steps<<endl;
+        if(dp[x][y][steps] != -1){
+            return dp[x][y][steps];
+        }
+        int ways = 0;
+        for(auto dir : dirs){
+            int nx = x + dir[0];
+            int ny = y + dir[1];
+            ways += solve(nx,ny,m,n,steps - 1);
+            ways %= 1000000007;
+        }
+        return dp[x][y][steps] = ways;
+    }
+    int findPaths(int m, int n, int N, int i, int j) {
+        memset(dp,-1,sizeof(dp));
+        return solve(i,j,m,n,N);
+    }
+};
