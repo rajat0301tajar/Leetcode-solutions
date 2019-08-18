@@ -1,0 +1,43 @@
+You are given an array of strings words and a string chars.
+
+A string is good if it can be formed by characters from chars (each character can only be used once).
+
+Return the sum of lengths of all good strings in words.
+
+ 
+
+Example 1:
+
+Input: words = ["cat","bt","hat","tree"], chars = "atach"
+Output: 6
+Explanation: 
+The strings that can be formed are "cat" and "hat" so the answer is 3 + 3 = 6.
+
+-------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    int countCharacters(vector<string>& words, string chars) {
+        map<char,int>ref;
+        for(auto c: chars){
+            ref[c]++;
+        }
+        int ret = 0;
+        for(auto x : words){
+            map<char,int>freq;
+            for(auto c : x){
+                freq[c]++;
+            }
+            bool f = true;
+            for(auto x : freq){
+                if(x.second > ref[x.first]){
+                    f = false;
+                    break;
+                }
+            }
+            if(f){
+                ret += x.size();
+            }
+        }
+        return ret;
+    }
+};
