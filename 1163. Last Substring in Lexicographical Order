@@ -1,0 +1,63 @@
+Given a string s, return the last substring of s in lexicographical order.
+
+ 
+
+Example 1:
+
+Input: "abab"
+Output: "bab"
+Explanation: The substrings are ["a", "ab", "aba", "abab", "b", "ba", "bab"]. The lexicographically maximum substring is "bab".
+
+Example 2:
+
+Input: "leetcode"
+Output: "tcode"
+--------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    string lastSubstring(string s) {
+        int n = s.size();
+        int maxChar = 0;
+        for(int i = 0; i < n; i++){
+            maxChar = max(maxChar, (int)s[i]);
+        }
+        vector<int>arr(n,0);
+        set<int>c;
+        for(int i = 0; i < n; i++){
+            if(s[i] == maxChar){
+                arr[i] = 1;   // substring starting from ith index for now len = 1
+                c.insert(i);
+            }else{
+                arr[i] = -1; // substring not considered as candidate.
+            }
+        }
+        while(c.size() > 1){
+            set<int>c2 ;// lists the index to be deleted.
+            maxChar = 0; // search for largest character succeeding first character in cand. seq. same or diff.
+            for(auto it : c){  // if same as first max character then swallow it. 
+                if(it + arr[it] >= n){
+                    c2.insert(it);
+                    continue;
+                }
+                maxChar = max(maxChar, (int)s[it + arr[it]]);
+            }
+            for(auto it : c){
+                if(s[it + arr[it]] == maxChar){
+                    arr[it]++;
+                    if(c.find(it + arr[it]) != c.end()){ // snake swallow.
+                        c2.insert(it + arr[it]);
+                        arr[it + arr[it]] = -1;
+                    }
+                } else {
+                    arr[it] = -1; // a larger sequence has been found better than current.
+                    c2.insert(it);
+                } 
+            }
+            for(auto it : c2){
+                c.erase(it);
+            }
+        }
+        int start = *(c.begin());
+        return s.substr(start);
+    }
+};
