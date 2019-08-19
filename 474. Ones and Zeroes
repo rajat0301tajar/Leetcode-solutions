@@ -1,0 +1,55 @@
+In the computer world, use restricted resource you have to generate maximum benefit is what we always want to pursue.
+
+For now, suppose you are a dominator of m 0s and n 1s respectively. On the other hand, there is an array with strings consisting of only 0s and 1s.
+
+Now your task is to find the maximum number of strings that you can form with given m 0s and n 1s. Each 0 and 1 can be used at most once.
+
+Note:
+
+    The given numbers of 0s and 1s will both not exceed 100
+    The size of given string array won't exceed 600.
+
+ 
+
+Example 1:
+
+Input: Array = {"10", "0001", "111001", "1", "0"}, m = 5, n = 3
+Output: 4
+
+Explanation: This are totally 4 strings can be formed by the using of 5 0s and 3 1s, which are “10,”0001”,”1”,”0”
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    pair<int,int> calc(string x){
+        int o = 0; int t = 0;
+        for(int i = 0; i < x.size(); i++){
+            if(x[i] == '0'){
+                o++;
+            }
+            else
+                t++;
+        }
+        return {o,t};
+    }
+    int findMaxForm(vector<string>& strs, int m, int n) {
+        int sz = strs.size();
+        int dp[sz + 1][m + 1][n + 1];
+        //dp[i][j][k] = max no of strings that can be made in strs[0...i - 1] using j 0 k 1
+        memset(dp,0,sizeof(dp));
+        vector<pair<int,int>>usage(sz + 1,{0,0});
+        for(int i = 0; i < sz; i++){
+            usage[i + 1] = calc(strs[i]);
+        }
+        for(int i = 1; i < sz + 1; i++){
+            
+            for(int j = 0; j < m + 1; j++){
+                for(int k = 0; k < n + 1; k++){
+                    dp[i][j][k] = dp[i - 1][j][k];
+                    if(usage[i].first <= j && usage[i].second <= k)
+                    dp[i][j][k] = max(dp[i][j][k],dp[i - 1][j - usage[i].first][k - usage[i].second] + 1);
+                }
+            }
+        }
+        return dp[sz][m][n];
+    }
+};
