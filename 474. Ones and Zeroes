@@ -53,3 +53,40 @@ public:
         return dp[sz][m][n];
     }
 };
+
+
+// using reduced space complexity --> rolling array concept.
+class Solution {
+public:
+    pair<int,int> calc(string x){
+        int o = 0; int t = 0;
+        for(int i = 0; i < x.size(); i++){
+            if(x[i] == '0'){
+                o++;
+            }
+            else
+                t++;
+        }
+        return {o,t};
+    }
+    int findMaxForm(vector<string>& strs, int m, int n) {
+        int sz = strs.size();
+        int dp[m + 1][n + 1];
+        //dp[i][j][k] = max no of strings that can be made in strs[0...i - 1] using j 0 k 1
+        memset(dp,0,sizeof(dp));
+        vector<pair<int,int>>usage(sz + 1,{0,0});
+        for(int i = 0; i < sz; i++){
+            usage[i + 1] = calc(strs[i]);
+        }
+        for(int i = 1; i < sz + 1; i++){
+            
+            for(int j = m; j >= usage[i].first; j--){
+                for(int k = n; k >= usage[i].second; k--){
+                    if(usage[i].first <= j && usage[i].second <= k)
+                    dp[j][k] = max(dp[j][k],dp[j - usage[i].first][k - usage[i].second] + 1);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+};
