@@ -1,0 +1,62 @@
+/******************************************
+*    AUTHOR:         Atharva Sarage       *
+*    INSTITUITION:   IIT HYDERABAD        *
+******************************************/
+#include<bits/stdc++.h>
+#warning Check Max_Limit,Overflows
+using namespace std;
+# define IOS ios::sync_with_stdio(0);cin.tie(0);cout.tie(0);
+# define ff first
+# define ss second
+# define pb push_back
+# define mod 1000000007
+# define ll long long 
+# define db double
+# define pii pair<int,int>
+# define inf (ll)1e18
+# define mx2 1000005
+# define mx 100005
+# define endl "\n"
+int main()
+{
+	IOS;
+	string str;
+	while(cin>>str,str!="0")	
+	{
+		int n=str.length(),odd=0,swaps=0;
+		int m[30] = {};
+		for(auto k:str)
+			m[k-'a']++;
+		for(int i=0;i<26;i++)
+			if(m[i]%2==1)
+				odd++;
+		if(odd>1)
+			{cout<<"Impossible\n";continue;}
+
+		int i=0,j=n-1;
+		while(j>i)
+		{
+			if(str[i]==str[j])
+				{i++;j--;continue;}
+			for(int k=1;;k++)
+			{
+				if(str[j-k]==str[i]){
+					swaps+=k;
+					for(int t=j-k;t<j;t++)
+						swap(str[t],str[t+1]);
+					i++;j--;break;
+				}
+				if(str[i+k]==str[j]){
+					swaps+=k;
+					for(int t=i+k;t>i;t--)
+						swap(str[t],str[t-1]);
+					i++;j--;break;
+				}		
+			}
+		}
+		for(int i=0;i<n;i++)
+			assert(str[i]==str[n-i-1]);
+		cout<<swaps<<endl;
+
+	}
+}
