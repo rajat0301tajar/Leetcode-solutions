@@ -1,7 +1,3 @@
-/******************************************
-*    AUTHOR:         Atharva Sarage       *
-*    INSTITUITION:   IIT HYDERABAD        *
-******************************************/
 #include<bits/stdc++.h>
 #warning Check Max_Limit,Overflows
 using namespace std;
