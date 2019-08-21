@@ -1,0 +1,60 @@
+Given a set of distinct positive integers, find the largest subset such that every pair (Si, Sj) of elements in this subset satisfies:
+
+Si % Sj = 0 or Sj % Si = 0.
+
+If there are multiple solutions, return any subset is fine.
+
+Example 1:
+
+Input: [1,2,3]
+Output: [1,2] (of course, [1,3] will also be ok)
+
+Example 2:
+
+Input: [1,2,4,8]
+Output: [1,2,4,8]
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    vector<int> largestDivisibleSubset(vector<int>& A) {
+        // dp[i] = largest subset of A[0...i] satisfying constraints and ending at i.
+        // dp[i] = max over j where A[j] % A[i] == 0 || A[i] % A[j] == 0(1 + dp[j]);
+        int n = A.size();
+        if(n == 0){
+            return {};
+        }
+        sort(A.begin(),A.end());
+        int dp[n];
+        for(int i = 0; i < n; i++){
+            dp[i] = 1;
+        }
+        map<int,int>pre;
+        for(int i = 1; i < n; i++){
+            for(int j = 0; j < i; j++){
+                if(A[i] % A[j] == 0 || A[j] % A[i] == 0){
+                    if(dp[i] < 1 + dp[j]){
+                        dp[i] = 1 + dp[j];
+                        pre[i] = j;
+                    }
+                }
+            }
+        }
+        int idx = -1;
+        int mx = 0;
+        for(int i = 0; i < n; i++){
+            if(mx < dp[i]){
+                mx = dp[i];
+                idx = i;
+            }
+        }
+        vector<int>ret(mx);
+        ret[mx - 1] = (A[idx]);
+        for(int i = mx - 2; i >= 0; i--){
+            idx = pre[idx];
+            ret[i] = (A[idx]);
+        }
+        
+        return ret;
+    }
+};
