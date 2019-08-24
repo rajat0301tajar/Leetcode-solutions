@@ -1,0 +1,51 @@
+There are n houses in a village. We want to supply water for all the houses by building wells and laying pipes.
+
+For each house i, we can either build a well inside it directly with cost wells[i], or pipe in water from another well to it. The costs to lay pipes between houses are given by the array pipes, where each pipes[i] = [house1, house2, cost] represents the cost to connect house1 and house2 together using a pipe. Connections are bidirectional.
+
+Find the minimum total cost to supply water to all houses.
+
+Input: n = 3, wells = [1,2,2], pipes = [[1,2,1],[2,3,1]]
+Output: 3
+Explanation: 
+The image shows the costs of connecting houses using pipes.
+The best strategy is to build a well in the first house with cost 1 and connect the other houses to it with cost 2 so the total cost is 3.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    int uf[10001];
+    int find(int x){
+        if(uf[x] != x)
+            uf[x] = find(uf[x]);
+        return uf[x];
+    }
+    void union1(int x, int y){
+        if(find(x) == find(y)){
+            return;
+        }
+        uf[find(x)] = uf[find(y)];
+    }
+    int minCostToSupplyWater(int n, vector<int>& wells, vector<vector<int>>& pipes) {
+        for(int i = 0; i <= n; i++){
+            uf[i] = i;
+        }
+        priority_queue<vector<int>,vector<vector<int>>,greater<vector<int>>>pq;
+        for(auto x : pipes){
+            pq.push({x[2],x[0],x[1]});
+        }
+        int c = 0;
+        for(auto x : wells){
+            pq.push({x,0,++c});
+        }
+        int ret = 0;
+        while(!pq.empty()){
+            auto temp = pq.top();
+            pq.pop();
+            int x = temp[1], y = temp[2], cost = temp[0];
+            if(find(x) != find(y)){
+                ret += cost;
+                union1(x, y);
+            }
+        }
+        return ret;
+    }
+};
