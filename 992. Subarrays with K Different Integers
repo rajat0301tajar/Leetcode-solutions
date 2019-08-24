@@ -1,0 +1,59 @@
+Given an array A of positive integers, call a (contiguous, not necessarily distinct) subarray of A good if the number of different integers in that subarray is exactly K.
+
+(For example, [1,2,3,1,2] has 3 different integers: 1, 2, and 3.)
+
+Return the number of good subarrays of A.
+
+ 
+
+Example 1:
+
+Input: A = [1,2,1,2,3], K = 2
+Output: 7
+Explanation: Subarrays formed with exactly 2 different integers: [1,2], [2,1], [1,2], [2,3], [1,2,1], [2,1,2], [1,2,1,2].
+
+Example 2:
+
+Input: A = [1,2,1,3,4], K = 3
+Output: 3
+Explanation: Subarrays formed with exactly 3 different integers: [1,2,1,3], [2,1,3], [1,3,4].
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    int subarraysWithKDistinct(vector<int>& A, int K) {
+       // maintain a left index in the array
+          // maintain right index in the array greater than or equal to left.
+          // now maintain a window variable having no of distinct elements in the window
+       // algorithm:
+           // fix left then increase right till we get first subarray with k distinct elem.
+           // increment answer by 1 ,
+           // next decrement freq[A[left]] and if it becomes ==0 decrease window by 1
+            // again increase right till distinct elements in window becomes =k
+            // repeat similarly.
+        unordered_map<int,int>freq;
+        int n=A.size();
+        int left=0, right=0, window=0;
+        int ans=0;
+        for(left=0; left<n ; left++){
+            while(right<n && window!=K){
+                freq[A[right]]++;
+                if(freq[A[right]]==1)
+                    window++;
+                right++;
+            }
+            if(window==K){
+                ans++;
+            }
+            for(int i=right;i<n;i++){
+                if(freq[A[i]]!=0){
+                    ans++;
+                }
+                else break;
+            }
+            freq[A[left]]--;
+            if(freq[A[left]]==0)
+                window--;
+        }
+          return ans;  
+    }
+};
