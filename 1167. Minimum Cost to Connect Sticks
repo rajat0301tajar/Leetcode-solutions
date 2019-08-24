@@ -1,0 +1,62 @@
+You have some sticks with positive integer lengths.
+
+You can connect any two sticks of lengths X and Y into one stick by paying a cost of X + Y.  You perform this action until there is one stick remaining.
+
+Return the minimum cost of connecting all the given sticks into one stick in this way.
+
+ 
+
+Example 1:
+
+Input: sticks = [2,4,3]
+Output: 14
+
+Example 2:
+
+Input: sticks = [1,8,3,5]
+Output: 30
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    int connectSticks(vector<int>& A) {
+        /*int n = A.size();
+        int dp[n][n]; // min cost to merge A[i...j] ---> ans = dp[0][n - 1];
+        memset(dp,0,sizeof(dp));
+        sort(A.begin(),A.end());
+        for(int i = 0; i < n; i++){
+            dp[i][i] = A[i];
+        }
+        /*for(int i = 1; i < n; i++){
+            dp[i - 1][i] = A[i] + A[i - 1];
+        }*/
+        // dp[i][j] = min over all k (dp[i][k - 1] + dp[k + 2][j] + (A[k] + A[k + 1]));
+        /*for(int l = 2; l <= n; l++){
+            for(int i = 0; i < n - l + 1; i++){
+                int j = i + l - 1;
+                dp[i][j] = 1 << 30;
+                for(int k = i + 1; k <= j; k++){
+                    dp[i][j] = min(dp[i][j],  (i != k - 1 ? 2 * dp[i][k - 1] : A[i]) +  (j != k ? 2 * dp[k][j]  : A[k]));
+                }
+            }
+        }
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+                cout<<dp[i][j]<<" ";
+            }
+            cout<<endl;
+        }
+        return dp[0][n - 1];*/
+        priority_queue<int,vector<int>,greater<int>>pq;
+        for(auto x : A){
+            pq.push(x);
+        }
+        int ret = 0;
+        while(pq.size() != 1){
+            int a = pq.top(); pq.pop();
+            int b = pq.top(); pq.pop();
+            pq.push(a + b);
+            ret += (a + b);
+        }
+        return ret;
+    }
+};
