@@ -1,0 +1,93 @@
+A transaction is possibly invalid if:
+
+    the amount exceeds $1000, or;
+    if it occurs within (and including) 60 minutes of another transaction with the same name in a different city.
+
+Each transaction string transactions[i] consists of comma separated values representing the name, time (in minutes), amount, and city of the transaction.
+
+Given a list of transactions, return a list of transactions that are possibly invalid.  You may return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: transactions = ["alice,20,800,mtv","alice,50,100,beijing"]
+Output: ["alice,20,800,mtv","alice,50,100,beijing"]
+Explanation: The first transaction is invalid because the second transaction occurs within a difference of 60 minutes, have the same name and is in a different city. Similarly the second one is invalid too.
+
+Example 2:
+
+Input: transactions = ["alice,20,800,mtv","alice,50,1200,mtv"]
+Output: ["alice,50,1200,mtv"]
+
+Example 3:
+
+Input: transactions = ["alice,20,800,mtv","bob,50,1200,mtv"]
+Output: ["bob,50,1200,mtv"]
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    int to_int(string n){
+        stringstream ss(n);
+        int x ;
+        ss >> x;
+        return x;
+    }
+    vector<string>split(string s){
+        int n = s.size();
+        int comma = 0;
+        vector<string>ret;
+        int prev = 0;
+        int i = 0;
+        while(i < n){
+            if(s[i] == ','){
+                comma++;
+                if(comma != 4)
+                {
+                    ret.push_back(s.substr(prev, i - prev));
+                    prev = i + 1;
+                }
+            }
+            if(comma == 3){
+                ret.push_back(s.substr(prev));
+                return ret;
+            }
+            i++;
+        }
+        return ret;
+    }
+    vector<string> invalidTransactions(vector<string>& A) {
+        int n = A.size();
+        unordered_set<string>st;
+        vector<vector<string>>v;
+        for(auto x :  A){
+            v.push_back(split(x));
+            
+        }
+        /*for(int i = 0; i < n; i++){
+            for(auto x : v[i]){
+                cout<<x<<" ";
+            }
+            cout<<endl;
+        }*/
+        // name , time, amount, city
+        for(int i = 0; i < n; i++){
+            if(to_int(v[i][2]) > 1000){
+                st.insert(A[i]); //continue;
+            }
+            for(int j = 0; j < n; j++){
+                if(st.find(A[j]) != st.end()) continue;
+                if(i == j) continue;
+                if(to_int(v[j][2]) > 1000){
+                    st.insert(A[j]); continue;
+                }
+                if(v[i][0] == v[j][0] && v[i][3] != v[j][3] && abs(to_int(v[i][1]) - to_int(v[j][1])) <= 60 ){
+                    st.insert(A[i]); st.insert(A[j]);
+                }
+            }
+        }
+        vector<string>ret(st.begin(),st.end());
+        return ret;
+    }
+};
