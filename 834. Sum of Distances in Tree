@@ -1,0 +1,58 @@
+An undirected, connected tree with N nodes labelled 0...N-1 and N-1 edges are given.
+
+The ith edge connects nodes edges[i][0] and edges[i][1] together.
+
+Return a list ans, where ans[i] is the sum of the distances between node i and all other nodes.
+
+Example 1:
+
+Input: N = 6, edges = [[0,1],[0,2],[2,3],[2,4],[2,5]]
+Output: [8,12,6,10,10,10]
+Explanation: 
+Here is a diagram of the given tree:
+  0
+ / \
+1   2
+   /|\
+  3 4 5
+We can see that dist(0,1) + dist(0,2) + dist(0,3) + dist(0,4) + dist(0,5)
+equals 1 + 1 + 2 + 2 + 2 = 8.  Hence, answer[0] = 8, and so on.
+----------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    map<int,vector<int>>tree;
+    vector<int>result, count;
+    
+    // postorder traversal.
+    void dfs(int root,int pre){         // to get result for root.
+        for(auto x : tree[root]){
+            if(x == pre)
+                continue;
+            dfs(x,root);
+            count[root] += count[x];
+            result[root] += result[x] + count[x];
+        }
+        count[root]++;
+    }
+    // preorder traversal.
+    void dfs2(int root,int pre){      // rest we calculate in top down way from root.
+        for(auto x : tree[root]){
+            if(x == pre){
+                continue;
+            }
+            result[x] = result[root] - count[x] + (count.size() - count[x]); 
+            dfs2(x,root);
+        }
+    }
+    vector<int> sumOfDistancesInTree(int N, vector<vector<int>>& edges) {
+        result.assign(N,0);
+        count.assign(N,0);
+        for(auto e : edges){
+            tree[e[0]].push_back(e[1]);
+            tree[e[1]].push_back(e[0]);
+        }
+        dfs(0,-1);
+        dfs2(0,-1);
+        return result;
+    }
+};
