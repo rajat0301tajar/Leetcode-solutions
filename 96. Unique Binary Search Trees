@@ -1,0 +1,34 @@
+Given n, how many structurally unique BST's (binary search trees) that store values 1 ... n?
+
+Example:
+
+Input: 3
+Output: 5
+Explanation:
+Given n = 3, there are a total of 5 unique BST's:
+
+   1         3     3      2      1
+    \       /     /      / \      \
+     3     2     1      1   3      2
+    /     /       \                 \
+   2     1         2                 3
+
+-------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    int numTrees(int n) {
+        //G[n] -- > no of bst that can  be formed using n elements .
+        // f[i, n] --> no of bst that can be formed using n elements with i as root.
+        // f[i,n] = g[i - 1] * g[n - i];
+        // g[n] = f[1][n] + f[2][n] + ... + f[n][n];
+        int g[n + 1];
+        memset(g,0,sizeof(g));
+        g[0] = 1; g[1] = 1;
+        for(int i = 2; i <= n; i++){   // no of elements.
+            for(int j = 1; j <= i; j++){  // root.
+                g[i] += g[j - 1] * g[i - j];
+            }
+        }
+        return g[n];
+    }
+};
