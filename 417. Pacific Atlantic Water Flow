@@ -80,3 +80,48 @@ public:
         return ret;
     }
 };
+
+DFS METHOD ::
+class Solution {
+public:
+    int dirs[4][2] = {{1,0},{0,-1},{-1,0},{0,1}};
+    void dfs(vector<vector<int>> &A ,int n,int m, int prev, int x, int y, bool visited[155][155]){
+        if(x < 0 || y < 0 || x >= n || y >= m){
+            return;
+        }
+        if(A[x][y] < prev){
+            return;
+        }
+        if(visited[x][y]) return;
+        visited[x][y] = true;
+        for(auto dir : dirs){
+            int nx = x + dir[0];
+            int ny = y + dir[1];
+            dfs(A,n,m,A[x][y],nx,ny,visited);
+        }
+    }
+    vector<vector<int>> pacificAtlantic(vector<vector<int>>& A) {
+        bool pacific[155][155];   bool atlantic[155][155];
+        memset(pacific,false,sizeof(pacific)); memset(atlantic,false,sizeof(atlantic));
+        int n = A.size();
+        if(n == 0) return{};
+        int m = A[0].size();
+        for(int i = 0; i < n; i++){
+            dfs(A,n,m, INT_MIN, i,0,pacific);
+            dfs(A,n,m, INT_MIN, i, m - 1, atlantic);
+        }
+        for(int j = 0; j < m; j++){
+            dfs(A,n,m,INT_MIN,0,j,pacific);
+            dfs(A,n,m,INT_MIN,n - 1, j,atlantic);
+        }
+        vector<vector<int>>ret;
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                if(pacific[i][j] && atlantic[i][j]){
+                    ret.push_back({i,j});
+                }
+            }
+        }
+        return ret;
+    }
+};
