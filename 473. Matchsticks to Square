@@ -1,0 +1,83 @@
+Remember the story of Little Match Girl? By now, you know exactly what matchsticks the little match girl has, please find out a way you can make one square by using up all those matchsticks. You should not break any stick, but you can link them up, and each matchstick must be used exactly one time.
+
+Your input will be several matchsticks the girl has, represented with their stick length. Your output will either be true or false, to represent whether you could make one square using all the matchsticks the little match girl has.
+
+Example 1:
+
+Input: [1,1,2,2,2]
+Output: true
+
+Explanation: You can form a square with length 2, one side of the square came two sticks with length 1.
+
+Example 2:
+
+Input: [3,3,3,3,4]
+Output: false
+
+Explanation: You cannot find a way to form a square with all the matchsticks.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+
+    // here we focus to make the first place out of 4 of sum = sum_4 then nxt etc.
+    bool helper(vector<int>&A, int start, int sum[4], int idx, int sum_k, unordered_set<int>&st){
+        int n = A.size();
+        if(idx == 4){
+            return true;
+        }
+        for(int i = start; i < n; i++){
+            if(st.count(i)) continue;
+            if(sum[idx] + A[i] > sum_k) continue;
+            sum[idx] += A[i];
+            st.insert(i);
+            bool a = false; bool b = false;
+            if(sum[idx] == sum_k){
+                a = helper(A, 0, sum, idx + 1, sum_k, st);
+                if(a) return true;
+            }
+            else{
+                b = helper(A, i + 1, sum, idx, sum_k, st);
+                if(b) return true;
+            }
+            sum[idx] -= A[i];
+            st.erase(i);
+        }
+        return false;
+    }
+    bool makesquare(vector<int>& nums) {
+        int sum[4];
+        memset(sum, 0, sizeof(sum));
+        unordered_set<int>st;
+        int sum_k = accumulate(nums.begin(),nums.end(), 0) ;
+        if(sum_k % 4 != 0) return false;
+        return helper(nums, 0, sum, 0, sum_k / 4, st);
+    }
+    
+    // 2nd method where we focus on assigning a particular element of A to any 4 places.
+    bool helper(vector<int>&A, int idx, int sum[], int sum_k){
+        int n = A.size();
+        if(idx == n){
+            for(int i = 1; i < 4; i++){
+                if(sum[i - 1] != sum[i]) return false;
+            }
+            return true;
+        }
+        for(int i = 0; i < 4; i++){
+            if(sum[i] + A[idx] > sum_k) continue;
+            sum[i] += A[idx];
+            if(helper(A, idx + 1, sum, sum_k)) return true;
+            sum[i] -= A[idx];
+        }
+        return false;
+    }
+    bool makesquare(vector<int> & nums){
+        int n = nums.size(); 
+        if(n == 0) return false;
+        int sum[4];
+        memset(sum, 0, sizeof(sum));
+        sort(nums.rbegin(),nums.rend());
+        int sum_k = accumulate(nums.begin(),nums.end(), 0) ;
+        if(sum_k % 4 != 0) return false;
+        return helper(nums,0,sum,sum_k);
+    }
+};
