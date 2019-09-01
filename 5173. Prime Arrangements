@@ -1,0 +1,45 @@
+Return the number of permutations of 1 to n so that prime numbers are at prime indices (1-indexed.)
+
+(Recall that an integer is prime if and only if it is greater than 1, and cannot be written as a product of two positive integers both smaller than it.)
+
+Since the answer may be large, return the answer modulo 10^9 + 7.
+
+ 
+
+Example 1:
+
+Input: n = 5
+Output: 12
+Explanation: For example [1,2,5,4,3] is a valid permutation, but [5,2,3,4,1] is not because the prime number 5 is at index 1.
+
+Example 2:
+
+Input: n = 100
+Output: 682289015
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#define MOD 1000000007
+typedef long long int64;
+class Solution {
+public:
+    int F[200];
+    bool isPrime(int x){
+        if(x == 1) return false;
+        if(x == 2) return true;
+        for(int i = 2; i * i <= x; i++){
+            if(x % i == 0) return false;
+        }
+        return true;
+    }
+    int numPrimeArrangements(int n) {
+        F[0] = 1;
+        for(int i = 1; i <= n; i++) F[i] = ((int64)F[i - 1] * (int64)i) % MOD; 
+        int prime = 0, non_prime = 0;
+        for(int i = 1; i <= n; i++){
+            if(isPrime(i)) prime++; 
+            else non_prime++;
+        }
+        cout<<prime<<endl;
+        int64 ans = ((int64)F[prime] * ((int64)F[non_prime])%MOD) % MOD;
+        return ans;
+    }
+};
