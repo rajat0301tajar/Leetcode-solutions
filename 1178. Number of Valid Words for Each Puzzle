@@ -36,6 +36,37 @@ Constraints:
 class Solution {
 public:
     vector<int> findNumOfValidWords(vector<string>& words, vector<string>& puzzles) {
+        vector<int>freq(1 << 26,0);
+        for(auto &w : words){
+            int mask = 0;
+            for(auto &c : w){
+                mask |= (1 << (c - 'a'));
+            }
+            freq[mask]++;
+        }
+        int n = puzzles.size();
+        vector<int>ret(n,0);
+        int idx = 0;
+        for(auto &p : puzzles){
+            int mask = 0;
+            for(auto &c : p){
+                mask |= (1 << (c - 'a'));
+            }
+            for(int i = mask; i >= 0; i--){
+                i &= mask;   // we stright away jump to i & mask from i (optimization)
+                if(i & (1 << (p[0] - 'a'))){ // if first character exists.
+                    ret[idx] += freq[i];
+                }
+            }
+            idx++;
+        }
+        return ret;
+    }
+};
+
+class Solution {
+public:
+    vector<int> findNumOfValidWords(vector<string>& words, vector<string>& puzzles) {
         unordered_map<int,int>freq;
         
         for(auto &w : words){
