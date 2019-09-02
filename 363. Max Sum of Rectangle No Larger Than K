@@ -26,10 +26,12 @@ public:
                 cout<<row[k]<<" ";
                 }*/
                 //cout<<endl;
-                // row[i's] calculated for the given 2 column indexes as bound.
+                // row[k's] calculated for the given 2 column indexes as bound.
+                // row[] expands horizontally.
                 set<int>st;
                 st.insert(0);
                 int cur = 0; // stores the running sum of the row array.
+                //cur expands the sum vertically.
                 for(int k = 0; k < n; k++){
                     cur += row[k];
                     auto x = st.lower_bound(cur - K); // will give either equal or next larger element's iterator both in set and map.
