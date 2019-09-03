@@ -70,3 +70,63 @@ public:
         return ret;
     }
 };
+
+// My version : 
+class Solution {
+public:
+    vector<int>count;
+    void merge(vector<int> &A, vector<int> &idx, int l, int r){
+        vector<int>newIdx(r - l + 1);
+        int mid = (l + r) / 2;
+        int leftIdx = l; 
+        int rightIdx = mid + 1;
+        int rightCount = 0; int sortIdx = 0;
+        while(leftIdx <= mid && rightIdx <= r){
+            if(A[idx[rightIdx]] < A[idx[leftIdx]]){
+                newIdx[sortIdx] = idx[rightIdx]; 
+                rightIdx++;
+                rightCount++;
+            }
+            else{
+                newIdx[sortIdx] = idx[leftIdx];
+                count[idx[leftIdx]] += rightCount;
+                leftIdx++;
+            }
+            sortIdx++;
+        }
+        while(leftIdx <= mid){
+            newIdx[sortIdx] = idx[leftIdx];
+            count[idx[leftIdx]] += rightCount;
+            sortIdx++; leftIdx++;
+        }
+        while(rightIdx <= r){
+            newIdx[sortIdx++] = idx[rightIdx++];
+        }
+        for(int i = l; i <= r; i++){
+            idx[i] = newIdx[i - l];
+        }
+    }
+    void mergeSort(vector<int> &A, vector<int> &idx, int l, int r){
+        if(l >= r){
+            return;
+        }
+        int mid = (l + r) / 2;
+        mergeSort(A, idx, l, mid);
+        mergeSort(A, idx, mid + 1, r);
+        merge(A, idx, l, r);
+    }
+    vector<int> countSmaller(vector<int>& A) {
+        int n = A.size();
+        vector<int>idx(n);
+        count.resize(n);
+        vector<int>ret;
+        for(int i = 0; i < n; i++){
+            idx[i] = i;
+        }
+        mergeSort(A, idx, 0, n - 1);
+        for(int i = 0; i < n; i++){
+            ret.push_back(count[i]);
+        }
+        return ret;
+    }
+};
