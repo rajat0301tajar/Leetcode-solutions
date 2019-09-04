@@ -1,0 +1,73 @@
+Given an array A of non-negative integers, the array is squareful if for every pair of adjacent elements, their sum is a perfect square.
+
+Return the number of permutations of A that are squareful.  Two permutations A1 and A2 differ if and only if there is some index i such that A1[i] != A2[i].
+
+ 
+
+Example 1:
+
+Input: [1,17,8]
+Output: 2
+Explanation: 
+[1,8,17] and [17,8,1] are the valid permutations.
+
+Example 2:
+
+Input: [2,2,2]
+Output: 1
+
+ 
+
+Note:
+
+    1 <= A.length <= 12
+    0 <= A[i] <= 1e9
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    map<int,vector<int>>g;
+    map<pair<int,int>,int>mp;
+    typedef long long int64;
+    int dfs(int node, int n, int visited){
+        if(visited == ((1 << n) - 1)){
+            return 1;
+        }
+        if(mp.count({node, visited})) return mp[{node,visited}];
+        int ret = 0;
+        for(auto x : g[node]){
+            if(((visited >> x) & 1) == 0){
+                ret += dfs(x, n, (visited | (1 << x)));
+            }
+        }
+        return mp[{node, visited}] = ret;
+    }
+    int numSquarefulPerms(vector<int>& A) {
+        map<int,int>count;
+        int n = A.size();
+        for(int i = 0; i < n; i++){
+            count[A[i]]++;
+        }
+        int fact[20]; fact[0] = 1; fact[1] = 1;
+        for(int i = 2; i < 20; i++){
+            fact[i] = ((int64)fact[i - 1] * (int64)i);
+        }
+        
+        for(int i = 0; i < n; i++){
+            for(int j = i + 1; j < n; j++){
+                int temp = (int)(sqrt(A[i] + A[j]) + 0.5);
+                if(temp * temp == A[i] + A[j]){
+                    g[i].push_back(j);
+                    g[j].push_back(i);
+                }
+            }
+        }
+        int ans = 0; 
+        for(int i = 0; i < n; i++){
+            ans += dfs(i, n, (1 << i));
+        }
+        for(auto x : count){
+            ans /= fact[x.second];
+        }
+        return ans;
+    }
+};
