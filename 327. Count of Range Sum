@@ -1,0 +1,32 @@
+Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive.
+Range sum S(i, j) is defined as the sum of the elements in nums between indices i and j (i ≤ j), inclusive.
+
+Note:
+A naive algorithm of O(n2) is trivial. You MUST do better than that.
+
+Example:
+
+Input: nums = [-2,5,-1], lower = -2, upper = 2,
+Output: 3 
+Explanation: The three ranges are : [0,0], [2,2], [0,2] and their respective sums are: -2, -1, 2.
+------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    typedef long long int64;
+    int countRangeSum(vector<int>& A, int lower, int upper) {
+        int n = A.size();
+        int64 cur_sum = 0;
+        map<int64,int64>mp;// stores the curr sum and its freq found so far
+        mp[0] = 1; int64 ret = 0;
+        for(int i = 0; i < n; i++){
+            cur_sum += A[i];
+            auto upper_iter = mp.upper_bound(cur_sum - lower);
+            auto lower_iter = mp.lower_bound(cur_sum - upper);
+            for(; lower_iter != upper_iter; lower_iter++){
+                ret += lower_iter->second;
+            }
+            mp[cur_sum] += 1;
+        }
+        return ret;
+    }
+};
