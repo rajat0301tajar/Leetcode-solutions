@@ -1,0 +1,82 @@
+Given a data stream input of non-negative integers a1, a2, ..., an, ..., summarize the numbers seen so far as a list of disjoint intervals.
+
+For example, suppose the integers from the data stream are 1, 3, 7, 2, 6, ..., then the summary will be:
+
+[1, 1]
+[1, 1], [3, 3]
+[1, 1], [3, 3], [7, 7]
+[1, 3], [7, 7]
+[1, 3], [6, 7]
+
+ 
+
+Follow up:
+
+What if there are lots of merges and the number of disjoint intervals are small compared to the data stream's size?
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+struct Interval{
+    int start;
+    int end;
+};
+class SummaryRanges {
+public:
+    map<int,Interval>mp; // start is the key.
+    /** Initialize your data structure here. */
+    SummaryRanges() {
+        
+    }
+    
+    void addNum(int val) {
+        if(mp.count(val)) return;
+        auto l_iter = mp.upper_bound(val); 
+        if(l_iter == mp.begin()){
+            int x = l_iter->first;
+            if(x == val + 1){
+                mp[val] = {val, l_iter->second.end};
+                mp.erase(x);
+            }
+            else
+                mp[val] = {val, val};
+            return;
+        }
+        l_iter--; 
+        auto r_iter = mp.upper_bound(val);
+        int l = -999999, r = 999999;
+        if(l_iter != mp.end()) l = l_iter->first;
+        if(r_iter != mp.end()) r = r_iter->first;
+        //cout<<l<<" val = "<<val<<" "<<r<<endl;
+        if(l_iter != mp.end() && r_iter != mp.end() && val == mp[l].end + 1 && val + 1 == r){
+            mp[l].end = mp[r].end;
+            mp.erase(r);
+             //cout<<"1**********"<<endl;
+        }
+        else if(l_iter != mp.end() && mp[l].end + 1 >= val){
+            mp[l].end = max(mp[l].end, val);
+             //cout<<"2**********";
+        }
+        else if(r_iter != mp.end() && r == val + 1){
+            mp[val] = {val, mp[r].end};
+            //cout<<"3**********"<<endl;
+            mp.erase(r);
+            
+        }
+        else{
+            mp[val] = {val, val};
+        }
+    }
+    
+    vector<vector<int>> getIntervals() {
+        vector<vector<int>>ret;
+        for(auto x : mp){
+            ret.push_back({x.second.start, x.second.end});
+        }
+        return ret;
+    }
+};
+
+/**
+ * Your SummaryRanges object will be instantiated and called as such:
+ * SummaryRanges* obj = new SummaryRanges();
+ * obj->addNum(val);
+ * vector<vector<int>> param_2 = obj->getIntervals();
+ */
