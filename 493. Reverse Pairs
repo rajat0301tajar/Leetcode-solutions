@@ -1,0 +1,55 @@
+Given an array nums, we call (i, j) an important reverse pair if i < j and nums[i] > 2*nums[j].
+
+You need to return the number of important reverse pairs in the given array.
+
+Example1:
+
+Input: [1,3,2,3,1]
+Output: 2
+
+Example2:
+
+Input: [2,4,3,5,1]
+Output: 3
+
+Note:
+
+    The length of the given array will not exceed 50,000.
+    All the numbers in the input array are in the range of 32-bit integer.
+------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    typedef long long int64;
+    int ans;
+    void merge(int l, int r, vector<int>&A){
+        int mid = (l + r) / 2;
+        int sortIdx = 0;
+        int newA[r - l + 1];
+        int left = l; int right = mid + 1;
+        int p = mid + 1;
+        while(left <= mid){
+            while(p <= r && A[left] > (int64)2 * (int64)A[p])  p++;
+            ans += p - (mid + 1); // for this left how much answer we can get.
+            while(right <= r && A[left] >= A[right]) newA[sortIdx++] = A[right++];
+            newA[sortIdx++] = A[left++];
+        }
+        while(right <= r) newA[sortIdx++] = A[right++];
+        for(int i = l; i <= r; i++){
+            A[i] = newA[i - l];
+            //cout<<A[i]<<" ";
+        }
+    }
+    void mergeSort(int l, int r, vector<int>&A){
+        if(l >= r) return;
+        int mid = (l + r) / 2;
+        mergeSort(l, mid, A);
+        mergeSort(mid + 1, r, A);
+        merge(l, r, A);
+    }
+    int reversePairs(vector<int>& A) {
+        this->ans = 0;
+        int n = A.size();
+        mergeSort(0, n - 1, A);
+        return ans;
+    }
+};
