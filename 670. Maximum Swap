@@ -1,0 +1,46 @@
+ Given a non-negative integer, you could swap two digits at most once to get the maximum valued number. Return the maximum valued number you could get.
+
+Example 1:
+
+Input: 2736
+Output: 7236
+Explanation: Swap the number 2 and the number 7.
+
+Example 2:
+
+Input: 9973
+Output: 9973
+Explanation: No swap.
+
+Note:
+
+    The given number is in the range [0, 108]
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+int to_int1(string s){
+    stringstream ss(s);
+    int x; 
+    ss >> x;
+    return x;
+}
+class Solution {
+public:
+    int maximumSwap(int num) {
+        string A = to_string(num);
+        int last[10];
+        memset(last,0,sizeof(last));
+        for(int i = 0; i < A.size(); i++){
+            last[A[i] - '0'] = i;
+        }
+        for(int i = 0; i < A.size(); i++){
+            for(int d = 9; d > A[i] - '0'; d--){
+                if(last[d] > i){
+                    char tmp = A[i];
+                    A[i] = d + '0'; //A[last[d]];
+                    A[last[d]] = tmp;
+                    return to_int1(A);
+                }
+            }
+        }
+        return num;
+    }
+};
