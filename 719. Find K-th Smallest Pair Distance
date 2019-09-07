@@ -19,6 +19,33 @@ Note:
     0 <= nums[i] < 1000000.
     1 <= k <= len(nums) * (len(nums) - 1) / 2.
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Binary Search Solution : 
+class Solution {
+public:
+    int smallestDistancePair(vector<int>& A, int k) {
+        sort(A.begin(), A.end());
+        int n = A.size();
+        int mx = A[n - 1] - A[0];
+        int l = 0; int r = mx;
+        // need to find first yes.
+        while(l < r){
+            int m = l + (r - l) / 2;
+            int cnt = 0;
+            for(int i = 0, j = 0; i < n; i++){
+                while(j < n && A[j] - A[i] <= m) j++;
+                cnt += j - i - 1;
+            }
+            if(cnt < k){
+                l = m + 1;
+            }
+            else
+                r = m;
+        }
+        return r;
+    }
+};
+
+
 TLE SOLUTION USING PRIORITY QUEUE : 
 class Solution {
 public:
