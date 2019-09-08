@@ -39,16 +39,17 @@ public:
     vector<int>a, A, C;
     unordered_map<int,int>B;
     // return min swaps to make a[pos...n - 1] strictly increasing with allowed swaps from A[idx...m - 1]
-    int solve(int pos, int idx){
+    int solve(int pos, int idx){  // pos , idx tells current positions in a, A respectively.
         if(pos == n) return 0;
         if(dp[pos][idx] >= 0) return dp[pos][idx];
         int ret = 1 << 30;
         if(a[pos] > A[idx]){
             // no swap
-            int k = B[a[pos]];
+            int k = B[a[pos]]; // to ensure that A[idx] >= a[pos];
             ret = min(ret, solve(pos + 1, k));
         }
-        // with swap
+        // this part runs both in cases when a[pos] <= A[idx] & a[pos] > A[idx]
+        // with swap we move one step ahead in A since we have used A[idx] already.
         auto it = lower_bound(C.begin(), C.end(), idx + 1);
         if(it != C.end()){
             ret = min(ret, 1 + solve(pos + 1, *it));
