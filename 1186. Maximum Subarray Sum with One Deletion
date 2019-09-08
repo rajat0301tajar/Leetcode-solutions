@@ -1,0 +1,58 @@
+Given an array of integers, return the maximum sum for a non-empty subarray (contiguous elements) with at most one element deletion. In other words, you want to choose a subarray and optionally delete one element from it so that there is still at least one element left and the sum of the remaining elements is maximum possible.
+
+Note that the subarray needs to be non-empty after deleting one element.
+
+ 
+
+Example 1:
+
+Input: arr = [1,-2,0,3]
+Output: 4
+Explanation: Because we can choose [1, -2, 0, 3] and drop -2, thus the subarray [1, 0, 3] becomes the maximum value.
+
+Example 2:
+
+Input: arr = [1,-2,-2,3]
+Output: 3
+Explanation: We just choose [3] and it's the maximum sum.
+
+Example 3:
+
+Input: arr = [-1,-1,-1,-1]
+Output: -1
+Explanation: The final subarray needs to be non-empty. You can't choose [-1] and delete -1 from it, then get an empty subarray to make the sum equals to 0.
+
+ 
+
+Constraints:
+
+    1 <= arr.length <= 10^5
+    -10^4 <= arr[i] <= 10^4
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    int maximumSum(vector<int>& A) {
+        int n = A.size();
+        int L[n]; // L[i] = max subarray sum till index i.
+        // dp[i] = max(A[i], dp[i - 1] + A[i]);
+        int R[n];
+        memset(L,0,sizeof(L)); L[0] = A[0];
+        memset(R,0,sizeof(R)); R[n - 1] = A[n - 1];
+        int ret = *max_element(A.begin(),A.end());
+        
+        for(int i = 1; i < n; i++){
+            L[i] = max(A[i], L[i - 1] + A[i]);
+            ret = max(ret, L[i]);
+        }
+        for(int i = n - 2; i >= 0; i--){
+            R[i] = max(A[i], R[i + 1] + A[i]);
+            ret = max(ret, R[i]);
+        }
+        
+        for(int i = 1; i < n - 1; i++){
+            ret = max(ret, L[i - 1] + R[i + 1]);
+        } 
+        
+        return ret;
+    }
+};
