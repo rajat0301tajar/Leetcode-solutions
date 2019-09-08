@@ -1,0 +1,123 @@
+
+
+Given a list of phrases, generate a list of Before and After puzzles.
+
+A phrase is a string that consists of lowercase English letters and spaces only. No space appears in the start or the end of a phrase. There are no consecutive spaces in a phrase.
+
+Before and After puzzles are phrases that are formed by merging two phrases where the last word of the first phrase is the same as the first word of the second phrase.
+
+Return the Before and After puzzles that can be formed by every two phrases phrases[i] and phrases[j] where i != j. Note that the order of matching two phrases matters, we want to consider both orders.
+
+You should return a list of distinct strings sorted lexicographically.
+
+ 
+
+Example 1:
+
+Input: phrases = ["writing code","code rocks"]
+Output: ["writing code rocks"]
+
+Example 2:
+
+Input: phrases = ["mission statement",
+                  "a quick bite to eat",
+                  "a chip off the old block",
+                  "chocolate bar",
+                  "mission impossible",
+                  "a man on a mission",
+                  "block party",
+                  "eat my words",
+                  "bar of soap"]
+Output: ["a chip off the old block party",
+         "a man on a mission impossible",
+         "a man on a mission statement",
+         "a quick bite to eat my words",
+         "chocolate bar of soap"]
+
+Example 3:
+
+Input: phrases = ["a","b","a"]
+Output: ["a"]
+
+ 
+
+Constraints:
+
+    1 <= phrases.length <= 100
+    1 <= phrases[i].length <= 100
+---------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    unordered_set<string>used;
+    struct Node{
+        vector<string>words;
+        string first;
+        string last;
+    };
+    vector<string> beforeAndAfterPuzzles(vector<string>& phrases) {
+        vector<Node>v;
+        int n = phrases.size();
+        for(auto p : phrases){
+            stringstream ss(p + " ");
+            vector<string>words;
+            string x;
+            while(ss >> x){
+                words.push_back(x);
+            }
+            int m = words.size();
+            string f = words[0]; string l = words[m - 1];
+            v.push_back({words, f, l});
+        }
+        vector<string>ret;
+        for(int i = 0; i < n; i++){
+            for(int j = i + 1; j < n; j++){
+                if(i == j) continue;
+                string f1 = v[i].first; string l1 = v[i].last;
+                string f2 = v[j].first; string l2 = v[j].last;
+                string temp = "";
+                if(f1 == l2){
+                    temp = "";
+                    for(auto x : v[j].words){
+                        temp += x + " ";
+                    }
+                    int k;
+                    for(k = 1; k < v[i].words.size() - 1; k++){
+                        temp += v[i].words[k] + " ";
+                    }
+                    if(k < v[i].words.size())
+                    temp += v[i].words[k];
+                    if(temp[temp.size() - 1] == ' '){
+                    temp = temp.substr(0, temp.size() - 1);
+                    }
+                    if(temp != "" && used.find(temp) == used.end()){
+                        ret.push_back(temp);
+                        used.insert(temp);
+                    }
+                }
+                if(f2 == l1){
+                    temp = "";
+                    for(auto x : v[i].words){
+                        temp += x + " ";
+                    }
+                    int k;
+                    for(k = 1; k < v[j].words.size() - 1; k++){
+                        temp += v[j].words[k] + " ";
+                    }
+                    if(k < v[j].words.size())
+                    temp += v[j].words[k];
+                    if(temp[temp.size() - 1] == ' '){
+                    temp = temp.substr(0, temp.size() - 1);
+                    }
+                    if(temp != "" && used.find(temp) == used.end()){
+                        ret.push_back(temp);
+                        used.insert(temp);
+                    }
+                }
+                 
+                
+            }
+        }
+        sort(ret.begin(),ret.end());
+        return ret;
+    }
+};
