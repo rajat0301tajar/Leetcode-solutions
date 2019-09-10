@@ -1,0 +1,46 @@
+Given a set of distinct integers, nums, return all possible subsets (the power set).
+
+Note: The solution set must not contain duplicate subsets.
+
+Example:
+
+Input: nums = [1,2,3]
+Output:
+[
+  [3],
+  [1],
+  [2],
+  [1,2,3],
+  [1,3],
+  [2,3],
+  [1,2],
+  []
+]
+-------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    set<vector<int>>st;
+    void helper(vector<vector<int>>&v, vector<int>&A, int i, int idx, int path[]){
+        int n = A.size();
+        if(i == n) return;
+        
+        path[idx] = A[i];
+        vector<int>temp(path, path + idx + 1);
+        if(st.find(temp) == st.end()){
+            v.push_back(temp);
+            st.insert(temp);
+        } 
+        helper(v, A, i + 1, idx + 1,path);
+        helper(v, A, i + 1, idx, path);
+    }
+    vector<vector<int>> subsets(vector<int>& nums) {
+        int n = nums.size();
+        vector<vector<int>>v; v.push_back({});
+        
+        int path[n];
+        for(int i = 0; i < n; i++){
+            helper(v, nums, i, 0, path);
+        }
+        return v;
+    }
+};
