@@ -1,0 +1,62 @@
+Find the largest element in an array A having k set bits and present between indices l and r inclusive.
+
+SEGMENT TREE IMPLEMENTATION : 
+#include <bits/stdc++.h>
+using namespace std;
+
+int st[100][31];
+vector<int>A;
+int countSetBits(int n){
+    int c = 0;
+    while(n){
+        if(n & 1) c++;
+        n = n / 2;
+    }
+    return c;
+}
+void build(int tidx, int lo, int hi){
+    if(lo == hi){
+        int x = countSetBits(A[lo]);
+        for(int i = 0; i <= 30; i++){
+            st[tidx][i] = -99999;
+        }
+        st[tidx][x] = A[lo];
+        return;
+    }
+    int mid = (lo + hi) / 2;
+    build(2 * tidx, lo, mid);
+    build(2 * tidx + 1, mid + 1, hi);
+    for(int i = 0; i <= 30; i++){
+        st[tidx][i] = max(st[2 * tidx][i], st[2 * tidx + 1][i]);
+    }
+}
+int query(int tidx, int lo, int hi, int ql, int qr, int k){
+    if(qr < lo || ql > hi){
+        return -99999;
+    }
+    if(lo >= ql && hi <= qr){
+        return st[tidx][k];
+    }
+    int mid = (lo + hi) / 2;
+    return max(query(2 * tidx, lo, mid, ql, qr, k),
+               query(2 * tidx + 1, mid + 1, hi, ql, qr, k));
+}
+int main()
+{
+    vector<int>a = {1,2,3,4,5,6,7,9,10,15};
+    A = a;
+    for(int i = 0; i < a.size(); i++) cout<<A[i]<<" ";
+    cout<<endl;
+    //memset(st, -1, sizeof(st));
+    int l = 0; int r = a.size() - 1; int k = 4;
+    build(1, 0, a.size() - 1);
+    for(int i = 0; i < 10; i++){
+        for(int j = 0; j < 4; j++){
+            cout<<st[i][j]<<" ";
+        }
+
+        cout<<endl;
+    }
+    cout<<query(1, 0, a.size() - 1, l, r, k)<<endl;
+    return 0;
+}
