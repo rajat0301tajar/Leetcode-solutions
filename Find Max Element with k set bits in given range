@@ -21,7 +21,7 @@ void build(int tidx, int lo, int hi){
             st[tidx][i] = -99999;
         }
         st[tidx][x] = A[lo];
-        return;
+        return; -------------------------------------------> very important line do not forget.
     }
     int mid = (lo + hi) / 2;
     build(2 * tidx, lo, mid);
