@@ -1,0 +1,81 @@
+Given a 2D binary matrix filled with 0's and 1's, find the largest rectangle containing only 1's and return its area.
+
+Example:
+
+Input:
+[
+  ["1","0","1","0","0"],
+  ["1","0","1","1","1"],
+  ["1","1","1","1","1"],
+  ["1","0","0","1","0"]
+]
+Output: 6
+----------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    int maximalRectangle(vector<vector<char>>& A) {
+        int n = A.size(); 
+        if(n == 0) return 0;int m = A[0].size();
+        int height[n][m];
+        for(int j = 0; j < m; j++){
+            height[0][j] = A[0][j] - '0';
+        }
+        for(int i = 1; i < n; i++){
+            for(int j = 0; j < m; j++){
+                if(A[i][j] == '1'){
+                    height[i][j] = height[i - 1][j] + 1;
+                }
+                else
+                    height[i][j] = 0;
+            }
+        }
+        int lessFromLeft[n][m]; int lessFromRight[n][m];
+        for(int i = 0; i < n; i++){
+            lessFromLeft[i][0] = -1;
+            lessFromRight[i][m - 1] = m;
+        }
+        for(int i = 0; i < n; i++){
+            for(int j = 1; j < m; j++){
+                int p = j - 1; 
+                while(p >= 0 && height[i][p] >= height[i][j]){
+                    p = lessFromLeft[i][p];
+                }
+                lessFromLeft[i][j] = p;
+            }
+        }
+        for(int i = 0; i < n; i++){
+            for(int j = m - 2; j >= 0; j--){
+                int p = j + 1;
+                while(p < m && height[i][p] >= height[i][j]){
+                    p = lessFromRight[i][p];
+                }
+                lessFromRight[i][j] = p;
+            }
+        }
+        /*for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                cout<<height[i][j]<<" ";
+            }
+            cout<<endl;
+        }
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                cout<<lessFromLeft[i][j]<<" ";
+            }
+            cout<<endl;
+        }
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                cout<<lessFromRight[i][j]<<" ";
+            }
+            cout<<endl;
+        }*/
+        int ret = 0;
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                ret = max(ret, height[i][j] * (lessFromRight[i][j] - lessFromLeft[i][j] - 1));
+            }
+        }
+        return ret;
+    }
+};
