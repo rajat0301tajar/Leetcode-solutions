@@ -1,0 +1,219 @@
+Given two words (beginWord and endWord), and a dictionary's word list, find all shortest transformation sequence(s) from beginWord to endWord, such that:
+
+    Only one letter can be changed at a time
+    Each transformed word must exist in the word list. Note that beginWord is not a transformed word.
+
+Note:
+
+    Return an empty list if there is no such transformation sequence.
+    All words have the same length.
+    All words contain only lowercase alphabetic characters.
+    You may assume no duplicates in the word list.
+    You may assume beginWord and endWord are non-empty and are not the same.
+
+Example 1:
+
+Input:
+beginWord = "hit",
+endWord = "cog",
+wordList = ["hot","dot","dog","lot","log","cog"]
+
+Output:
+[
+  ["hit","hot","dot","dog","cog"],
+  ["hit","hot","lot","log","cog"]
+]
+
+Example 2:
+
+Input:
+beginWord = "hit"
+endWord = "cog"
+wordList = ["hot","dot","dog","lot","log"]
+
+Output: []
+
+Explanation: The endWord "cog" is not in wordList, therefore no possible transformation.
+---------------------------------------------------------------------------------------------------------------------------
+TLE SOLUTIONs : 
+
+class Solution {
+public:
+    vector<vector<string>>ret;
+    vector<string>words;
+    map<int, vector<int>>g;
+    bool st[10000];
+    bool check(string a, string b){
+        int n = a.size();
+        int c = 0;
+        for(int i = 0; i < a.size(); i++){
+            if(a[i] != b[i]) c++;
+            if(c >= 2) return false;
+        }
+        return c == 1;
+    }
+    void dfs(int u, int &end, vector<int>&path, int idx, int &level){
+        if(idx > level) return;
+        if(u == end){
+            if(idx != level) return;
+            path[idx] = end;
+            vector<string>temp;
+            for(int i = 0; i <= idx; i++){
+                temp.push_back(words[path[i]]);
+            }
+            ret.push_back(temp);
+            return;
+        }
+        st[u] = true;
+        path[idx] = u;
+        auto adj = g[u];
+        for(auto x : adj){
+            if(!st[x]){
+                dfs(x, end, path, idx + 1, level);
+            }
+        }
+        st[u] = false;
+    }
+    vector<vector<string>> findLadders(string begin, string end, vector<string>& list) {
+        
+        int idx = -1, idx1 = -1; int len = list.size();
+        for(int i = 0; i < len; i++){
+            if(list[i] == begin){
+                idx = i; 
+            }
+            if(list[i] == end){
+                idx1 = i;
+            }
+            if(idx != -1 && idx1 != -1)
+                break;
+        }
+        if(idx1 == -1) return {};
+        if(idx == -1){
+            list.push_back(begin);
+            idx = list.size() - 1;
+        }
+        int n = list.size();
+        this->words = list;
+        for(int i = 0; i < n; i++){
+            for(int j = i + 1; j < n; j++){
+                if(check(list[i], list[j])){
+                    g[i].push_back(j);
+                    g[j].push_back(i);
+                }
+            }
+        }
+        queue<int>q; bool visit[10000];
+        q.push(idx); visit[idx] = true;
+        int level = 0;
+        int mn = 1 << 30;
+        while(!q.empty()){
+            int sz = q.size();
+            while(sz--){
+                int temp = q.front();
+                q.pop();
+                if(temp == idx1){
+                    mn = level;
+                    break;
+                }
+                auto adj = g[temp];
+                for(auto x : adj){
+                    if(visit[x]) continue;
+                    q.push(x);
+                    visit[x] = true;
+                }
+            }
+            level++;
+        }
+        vector<int>path(10000);
+        dfs(idx, idx1, path, 0, mn);
+        return ret;
+    }
+};
+
+class Solution {
+public:
+    vector<vector<string>>ret;
+    map<string, vector<string>>g;
+    unordered_set<string>st;
+    bool check(string a, string b){
+        int n = a.size();
+        int c = 0;
+        for(int i = 0; i < a.size(); i++){
+            if(a[i] != b[i]) c++;
+            if(c >= 2) return false;
+        }
+        return c == 1;
+    }
+    void dfs(string u, string &end, vector<string>&path, int idx, int &level){
+        if(idx > level) return;
+        if(u == end){
+            if(idx != level) return;
+            path[idx] = end;
+            ret.push_back(vector<string>(path.begin(), path.begin() + idx + 1));
+            return;
+        }
+        st.insert(u);
+        path[idx] = u;
+        auto adj = g[u];
+        for(auto x : adj){
+            if(!st.count(x)){
+                dfs(x, end, path, idx + 1, level);
+            }
+        }
+        st.erase(u);
+    }
+    vector<vector<string>> findLadders(string begin, string end, vector<string>& list) {
+        
+       
+        int idx = -1, idx1 = -1; int len = list.size();
+        for(int i = 0; i < len; i++){
+            if(list[i] == begin){
+                idx = i; 
+            }
+            if(list[i] == end){
+                idx1 = i;
+            }
+            if(idx != -1 && idx1 != -1)
+                break;
+        }
+        if(idx1 == -1) return {};
+        if(idx == -1){
+            list.push_back(begin);
+        }
+        int n = list.size();
+        
+        for(int i = 0; i < n; i++){
+            for(int j = i + 1; j < n; j++){
+                if(check(list[i], list[j])){
+                    g[list[i]].push_back(list[j]);
+                    g[list[j]].push_back(list[i]);
+                }
+            }
+        }
+        queue<string>q; unordered_set<string>visit;
+        q.push(begin); visit.insert(begin);
+        int level = 0;
+        int mn = 1 << 30;
+        while(!q.empty()){
+            int sz = q.size();
+            while(sz--){
+                string temp = q.front();
+                q.pop();
+                if(temp == end){
+                    mn = level;
+                    break;
+                }
+                auto adj = g[temp];
+                for(auto x : adj){
+                    if(visit.count(x)) continue;
+                    q.push(x);
+                    visit.insert(x);
+                }
+            }
+            level++;
+        }
+        vector<string>path(10000);
+        dfs(begin, end, path, 0, mn);
+        return ret;
+    }
+};
