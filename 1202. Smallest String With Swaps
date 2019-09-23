@@ -84,22 +84,45 @@ public:
 };
 ---------------------------------------------------------------------------------------------
 USING UNION FIND: 
- int find(vector<int>& ds, int i) {
-  return ds[i] < 0 ? i : ds[i] = find(ds, ds[i]);
-}
-string smallestStringWithSwaps(string s, vector<vector<int>>& pairs) {
-  vector<int> ds(s.size(), -1);
-  vector<vector<int>> m(s.size());
-  for (auto& p : pairs) {
-    auto i = find(ds, p[0]), j = find(ds, p[1]);
-    if (i != j) ds[j] = i;
-  }
-  for (auto i = 0; i < s.size(); ++i) m[find(ds, i)].push_back(i);
-  for (auto ids : m) {
-    string ss = "";
-    for (auto id : ids) ss += s[id];
-    sort(begin(ss), end(ss));
-    for (auto i = 0; i < ids.size(); ++i) s[ids[i]] = ss[i];
-  }
-  return s;
-}
+ class Solution {
+public:
+    int uf[100001];
+    int find(int x){
+        if(uf[x] == x){
+            return x;
+        }
+        uf[x] = find(uf[x]);
+        return uf[x];
+    }
+    void union1(int x, int y){
+        if(find(x) == find(y)) return;
+        uf[find(x)] = uf[find(y)];
+    } 
+    string smallestStringWithSwaps(string s, vector<vector<int>>& pairs) {
+        int n = s.size();
+        for(int i = 0; i < n; i++){
+            uf[i] = i;
+        }
+        for(auto x : pairs){
+            union1(x[0], x[1]);
+        }
+        vector<int>a[n];
+        for(int i = 0; i < n; i++){
+            a[find(i)].push_back(i);
+        }
+        auto comp = [&s](auto &x, auto &y){
+            return s[x] < s[y];
+        };
+        string ret = s;
+        for(int i = 0; i < n; i++){
+            if(find(i) != i) continue;
+            vector<int>b = a[i];  // original positions
+            sort(a[i].begin(), a[i].end(), comp);
+            int k = 0;            
+            for(auto it : b){
+                ret[it] = s[a[i][k++]];
+            }
+        }
+        return ret;
+    }
+};
