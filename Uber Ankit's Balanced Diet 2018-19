@@ -1,0 +1,36 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+int dp[50][100][100];
+bool ispossible(vector<vector<int>>&v,int idx, int s1, int s2, int target, int n){
+    if(s1 != 0 && s2 != 0 && s1 == target * s2) {
+            cout<<s1<<" "<<s2<<endl;
+            return true;
+    }
+    if(dp[idx][s1][s2] != -1) return dp[idx][s1][s2];
+    if(idx == n) return false;
+    cout<<s1<<"---"<<s2<<endl;
+    if(ispossible(v, idx + 1, s1, s2, target, n))
+        return dp[idx][s1][s2] = true;
+    if(ispossible(v, idx + 1, s1 + v[idx][0], s2 + v[idx][1], target, n))
+        return dp[idx][s1][s2] = true;
+    return false;
+}
+int main(){
+    int64 T; cin>>T;
+    while(T--){
+        int n, target;
+        cin>> n >> target;
+        memset(dp,-1,sizeof(dp));
+        vector<vector<int>>v; int x,y;
+        for(int i = 0; i < n; i++){
+            cin>>x>>y;
+            v.push_back({x,y});
+        }
+        if(ispossible(v,0,0,0,target,n)){
+            cout<<"YES"<<endl;
+        }
+        else
+            cout<<"NO"<<endl;
+    }
+}
