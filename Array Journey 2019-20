@@ -1,0 +1,81 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+
+int st[100000];
+vector<int>a;
+void build(int tidx, int lo, int hi){
+    if(lo == hi){
+        st[tidx] = a[lo];
+        return;
+    }
+    int mid = (lo + hi) / 2;
+    build(2 * tidx + 1, lo, mid);
+    build(2 * tidx + 2, mid + 1, hi);
+    st[tidx] = max(st[2 * tidx + 1], st[2 * tidx + 2]);
+}
+int query(int tidx, int lo, int hi, int ql, int qr){
+    if(lo > qr || hi < ql){
+        return -99999;
+    }
+    if(lo >= ql && hi <= qr){
+        return st[tidx];
+    }
+    int mid = (lo + hi) / 2;
+    return max(query(2 * tidx + 1, lo, mid, ql, qr),
+               query(2 * tidx + 2, mid + 1, hi, ql, qr));
+}
+int journey(vector<int>A, int k){
+    a = A;
+    int n = A.size();
+    vector<int>dp(n);
+    //dp[i] = max points gained till index i (inclusive)
+    vector<int>winMax;
+    deque<int>dq;
+    for(int i = 0; i < k; i++){
+        while(!dq.empty() && A[i] >= A[dq.back()]){
+            dq.pop_back();
+        }
+        dq.push_back(i);
+    }
+    winMax.push_back(A[dq.front()]);
+    for(int i = k; i < n; i++){
+
+        while(!dq.empty() && i - dq.front() >= k){
+            dq.pop_front();
+        }
+        while(!dq.empty() && A[i] >= A[dq.back()]){
+            dq.pop_back();
+        }
+        dq.push_back(i);
+        winMax.push_back(A[dq.front()]);
+    }
+
+    for(int i = 0; i < n - k + 1; i++){
+        cout<<winMax[i]<<" ";
+    }
+    cout<<endl;
+    build(0, 0, n - 1);
+    vector<int>win(n - k + 1); int x = 0;
+    for(int i = k - 1; i < n; i++){
+        win[x++] = query(0, 0, n - 1, i - k + 1, i);
+    }
+    for(int i = 0; i < n - k + 1; i ++){
+        cout<<win[i]<<" ";
+    }
+    cout<<endl;
+    dp[0] = A[0];
+    for(int i = 0; i < n; i++){
+        for(int j = 1; i + j < n && j <= k; j++){
+            dp[i + j] = max(dp[i + j], dp[i] + A[i + j]);
+        }
+    }
+    return dp[n - 1];
+}
+int main()
+{
+    vector<int>A = {10, 2, -10, 5, 20};
+    int k = 2;
+    cout<<journey(A, k)<<endl;
+    return 0;
+}
