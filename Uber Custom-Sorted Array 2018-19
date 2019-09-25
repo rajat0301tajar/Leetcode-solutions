@@ -1,0 +1,26 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+int getMinSwaps(vector<int>A){
+    int n = A.size();
+    int l = 0; int r = n - 1;
+    int ret = 0;
+    while(l < r){
+        while(l < r && A[l] % 2 == 0)
+            l++;
+        while(l < r && A[r] % 2 == 1)
+            r--;
+        if(l < r){
+            ret++;
+            swap(A[l], A[r]);
+            l++;
+            r--;
+        }
+    }
+    return ret;
+}
+int main(){
+    vector<int>A = {6,4,3,5};
+    cout<<getMinSwaps(A);
+    return 0;
+}
