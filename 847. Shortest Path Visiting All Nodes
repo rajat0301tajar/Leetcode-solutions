@@ -101,3 +101,79 @@ public:
         return ret;
     }
 };
+
+METHOD 3 : DP APPROACH with Bellman Ford Algorithm : 
+class Solution {
+public:
+    int shortestPathLength(vector<vector<int>>& graph) {
+        int n = graph.size();
+        int dp[n][1 << n];
+        for(int i = 0; i < n; i++){
+            fill(dp[i], dp[i] + (1 << n), n * n);
+        }
+        for(int i = 0; i < n; i++){
+            dp[i][1 << i] = 0;
+        }
+        for(int k = 0; k < (1 << n); k++){
+            bool repeat = true;
+            while(repeat){
+                repeat = false;
+                for(int i = 0; i < n; i++){
+                    int d = dp[i][k];
+                    for(auto x : graph[i]){
+                        int next_mask = k | (1 << x);
+                        if(d + 1 < dp[x][next_mask]){
+                            dp[x][next_mask] = d + 1;
+                            if(k == next_mask) repeat = true;
+                        }
+                    }
+                }
+            }
+        }
+        int ret = 1 << 30;
+        for(int i = 0; i < n; i++){
+            ret = min(ret, dp[i][(1 << n) - 1]);
+        }
+        return ret;
+    }
+};
+
+METHOD 4 : USING PRIORITY QUEUE : 
+class Solution {
+public:
+    typedef pair<int,int> pii;
+    int shortestPathLength(vector<vector<int>>& graph) {
+        int n = graph.size();
+        int visited[1<<12][12];
+        memset(visited,-1,sizeof(visited));
+        auto cmp = [&visited] (auto &a, auto &b){
+            return visited[a.first][a.second] > visited[b.first][b.second];
+        };
+        priority_queue<pii, vector<pii>, decltype(cmp)>q(cmp);
+        for(int i = 0; i < n; i++){
+            visited[1<<i][i]=0;
+            q.push({(1<<i),i});
+        }
+       
+        while(!q.empty()){
+            int mask = q.top().first;
+            int u = q.top().second;
+            q.pop();
+            if(mask == ((1<<n)-1))
+                return visited[mask][u];
+            for(auto x : graph[u]){
+                int next_mask = mask | (1<<x);
+                if(visited[next_mask][x]>=0)
+                    continue;
+                visited[next_mask][x] = 1 + visited[mask][u];
+                q.push({next_mask,x});
+            }
+        }
+        /*int ans  = INT_MAX;
+        for(int i =0 ;i< n;i++){
+            ans = min(ans, visited[(1<<n)-1][i]);
+        }*/
+        //return ans;
+        return -1;
+    }
+};
