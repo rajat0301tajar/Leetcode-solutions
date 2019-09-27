@@ -52,3 +52,42 @@ int main(){
     cout<<dp[N - 1][(1 << N) - 1]<<endl;
     return 0;
 }
+
+METHOD 2 : BELLMAN FORD + BIT MASKING : 
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+typedef pair<int,int>pii;
+map<int,vector<pii>>g;
+int main(){
+    int N, M; cin>>N>>M;
+
+    for(int i = 0; i < M; i++){
+        int u, v, w; cin>>u>>v>>w;
+        g[u - 1].push_back({v - 1,w});
+        g[v - 1].push_back({u - 1,w});
+    }
+    int64 dp[N][1 << N];
+    for(int i = 0; i < N; i++){
+        fill(dp[i], dp[i] + (1 << N), 1 << 30);
+    }
+    for(int i = 0; i < N; i++){
+        dp[i][1 << i] = 0;
+    }
+    for(int k = 0; k < (1 << N); k++){
+        bool repeat = true;
+        while(repeat){
+            repeat = false;
+            for(int i = 0; i < N; i++){
+                for(auto x : g[i]){
+                    if(dp[i][k] + x.second < dp[x.first][(k | (1 << x.first))]){
+                        dp[x.first][(k | (1 << x.first))] = dp[i][k] + x.second;
+                        if(k == (k | (1 << x.first))) repeat = true;
+                    }
+                }
+            }
+        }
+    }
+    cout << dp[N - 1][(1 << N) - 1];
+    return 0;
+}
