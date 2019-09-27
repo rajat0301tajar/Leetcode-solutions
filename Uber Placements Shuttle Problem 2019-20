@@ -1,0 +1,54 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+typedef pair<int,int>pii;
+map<int,vector<pii>>g;
+int64 dist[20][20];
+void floydWarshall(int n){
+    for(int k = 0; k < n; k++){
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+            }
+        }
+    }
+}
+int main(){
+    int N, M; cin>>N>>M;
+
+    for(int i = 0; i < M; i++){
+        int u, v, w; cin>>u>>v>>w;
+        g[u - 1].push_back({v - 1,w});
+        g[v - 1].push_back({u - 1,w});
+    }
+    for(int i = 0; i < N; i++){
+        fill(dist[i], dist[i] + N, 1 << 30);
+    }
+    for(int i = 0; i < N; i++){
+        dist[i][i] = 0;
+    }
+    for(int i = 0; i < N; i++){
+        for(auto x : g[i]){
+            dist[i][x.first] = x.second;
+        }
+    }
+    floydWarshall(N);
+    int64 dp[N][1 << N];
+    for(int i = 0; i < N; i++){
+        fill(dp[i], dp[i] + (1 << N), 1 << 30);
+    }
+    for(int i = 0; i < N; i++){
+        dp[i][1 << i] = 0;
+    }
+    for(int k = 0; k < (1 << N); k++){
+        for(int i = 0; i < N; i++){
+            for(int j = 0; j < N; j++){
+                if(((k >> i) & 1 == 1) && ((k >> j) & 1) == 0){
+                    dp[j][k | (1 << j)] = min(dp[j][k | (1 << j)], dp[i][k] + dist[i][j]);
+                }
+            }
+        }
+    }
+    cout<<dp[N - 1][(1 << N) - 1]<<endl;
+    return 0;
+}
