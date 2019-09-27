@@ -1,0 +1,41 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+int64 dp[1000][1000];
+const int mod = 1e9 + 7;
+int nCr(int n, int r){
+    if(n <= 0) return 0;
+    if(r == n) return 1;
+    if(r == 0) return 1;
+    if(dp[n][r] != -1) return dp[n][r];
+    dp[n][r] = (int64)nCr(n - 1, r) + nCr(n - 1, r - 1);
+    dp[n][r] %= mod;
+    return dp[n][r];
+}
+int64 powerOf2(int n){
+    if(n == 0) return 1;
+    int x = powerOf2(n / 2);
+    x = x * x % mod;
+    return (int64)(n % 2 ? x * 2 % mod : x);
+}
+int getWays(int x, int y){
+    if(x < y) swap(x, y);
+    if(x <= 24) return 0;
+    if(x == 25){
+        if(y >= 24) return 0;
+        // y <= 23 , last game to be won by x, rest x needs to win 24 games.
+        return nCr(24 + y, 24);
+    }
+    if(x != y + 2) return 0;
+    /* else (they had 48 matches each having 24 wins and the rest
+             player B had y - 24 wins in the rest of played matches
+             with last 2 to be won by player A*/
+    return (int64)(nCr(48, 24) * powerOf2(y - 24))% mod;
+}
+int main(){
+    int x, y;
+    cin>>x>>y;
+    memset(dp, -1, sizeof(dp));
+    cout<< getWays(x, y);
+    return 0;
+}
