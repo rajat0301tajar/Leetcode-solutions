@@ -47,3 +47,57 @@ public:
         return -1;
     }
 };
+
+// METHOD 2 : USING FLOYD WARSHALL + BITMASKING (dp) : 
+typedef long long int64;
+const int N = 12;
+int64 dist[N][N];
+int64 dp[N][1 << N];
+class Solution {
+public:
+    void floydWarshall(int n){
+        for(int k = 0; k < n; k++){
+            for(int i = 0; i < n; i++){
+                for(int j = 0; j < n; j++){
+                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+                }
+            }
+        }
+    }
+    int shortestPathLength(vector<vector<int>>& graph) {
+        int n = graph.size();
+        for(int i = 0; i < n; i++){
+            fill(dist[i], dist[i] + n, 1 << 30);
+        }
+        
+        for(int i = 0; i < n; i++){
+            dist[i][i] = 0;
+        }
+        for(int i = 0; i < n; i++){
+            for(auto x : graph[i]){
+                dist[i][x] = 1;
+            }
+        }
+        floydWarshall(n);
+        for(int i = 0; i < n; i++){
+            fill(dp[i], dp[i] + (1 << n), 1 << 30);
+        }
+        for(int i = 0; i < n; i++){
+            dp[i][1 << i] = 0;
+        }
+        for(int k = 0; k < (1 << n); k++){
+            for(int i = 0; i < n; i++){
+                for(int j = 0; j < n; j++){
+                    if(((k >> i) & 1) == 1 && ((k >> j) & 1)== 0){
+                        dp[j][k | (1 << j)] = min(dp[j][k | (1 << j)], (int64)dp[i][k] + dist[i][j]);
+                    }
+                }
+            }
+        }
+        int64 ret = 1 << 30;
+        for(int i = 0; i < n; i++){
+            ret = min(ret, dp[i][(1 << n) - 1]);
+        }
+        return ret;
+    }
+};
