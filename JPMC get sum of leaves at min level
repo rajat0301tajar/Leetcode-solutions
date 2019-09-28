@@ -1,0 +1,47 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+struct TreeNode{
+    TreeNode *left;
+    TreeNode *right;
+    int data;
+};
+TreeNode *getNode(int data){
+    TreeNode *temp = new TreeNode();
+    temp->data = data;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+void minLevel(TreeNode *root, int cur, int &level){
+    if(root == NULL) return;
+    if(root->left == NULL && root->right == NULL){
+        level = min(level, cur);
+    }
+    minLevel(root->left, cur + 1, level);
+    minLevel(root->right, cur + 1, level);
+}
+void sum(TreeNode *root, int &s, int cur, int level){
+    if(root == NULL) return;
+    if(cur == level && !root->left && !root->right){
+        s += root->data;
+    }
+    sum(root->left, s, cur + 1, level);
+    sum(root->right, s, cur + 1, level);
+}
+int main(){
+    TreeNode* root = getNode(1);
+    root->left = getNode(2);
+    root->right = getNode(3);
+    root->left->left = getNode(4);
+    root->left->right = getNode(5);
+    root->right->left = getNode(6);
+    root->right->right = getNode(7);
+    root->left->right->left = getNode(8);
+    root->right->left->right = getNode(9);
+    int level = 999999;
+    minLevel(root, 0, level);
+    int s = 0;
+    sum(root, s, 0, level);
+    cout<<s<<endl;
+    return 0;
+}
