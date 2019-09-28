@@ -1,0 +1,43 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+struct TreeNode{
+    TreeNode *left;
+    TreeNode *right;
+    int data;
+};
+TreeNode *getNode(int data){
+    TreeNode *temp = new TreeNode();
+    temp->data = data;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+void createLL(TreeNode *root, TreeNode **cur, TreeNode *head){
+    if(root == NULL) return;
+    createLL(root->left, cur, head);
+    if(!root->left && !root->right){
+        (*cur)->right = root;
+        (*cur) = (*cur)->right;
+    }
+    createLL(root->right, cur, head);
+}
+int main(){
+    TreeNode* root = getNode(1);
+    root->left = getNode(2);
+    root->right = getNode(3);
+    root->left->left = getNode(4);
+    root->left->right = getNode(5);
+    root->right->left = getNode(6);
+    root->right->right = getNode(7);
+    root->left->right->left = getNode(8);
+    root->right->left->right = getNode(9);
+    TreeNode *head = getNode(0);
+    TreeNode *cur = head;
+    createLL(root, &cur, head);
+    head = head->right;
+    while(head){
+        cout << head->data << (head->right ? " -> " : "");
+        head = head->right;
+    }
+    return 0;
+}
