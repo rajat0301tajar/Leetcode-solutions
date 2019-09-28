@@ -1,0 +1,49 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+char flip(char c){
+    if(c == '0') return '1';
+    else return '0';
+}
+string getBinaryCode(string s){
+    // msb is same.
+    //string ret = string(1, s[0]);
+    string ret = ""; ret += s[0];
+    for(int i = 1; i < s.size(); i++){
+        if(s[i] == '0'){
+            ret = ret + ret[i - 1];
+        }
+        else{
+            ret = ret + flip(ret[i - 1]);
+        }
+    }
+    return ret;
+}
+char xorC(char x, char y){
+    if(x == y) return '0';
+    else return '1';
+}
+string getGrayCode(string s){
+    string ret = string(1, s[0]);
+    for(int i = 1; i < s.size(); i++){
+        ret += xorC(s[i], s[i - 1]);
+    }
+    return ret;
+}
+int main(){
+    string input = "1000";
+    string binary = getBinaryCode(input);
+    string gray = getGrayCode(binary);
+    // convert to decimal
+    cout<< "binary representation "<<binary << endl;
+    cout<<"gray representation "<<gray<<endl;
+    reverse(binary.begin(), binary.end());
+    int pow2 = 1;
+    int decimal = 0;
+    for(int i = 0; i < binary.size(); i++){
+        decimal += pow2 * (binary[i] - '0');
+        pow2 *= 2;
+    }
+    cout<<decimal<<endl;
+    return 0;
+}
