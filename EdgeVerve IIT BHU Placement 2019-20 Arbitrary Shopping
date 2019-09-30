@@ -1,0 +1,21 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+int main(){
+    int n; cin >> n;
+    vector<int> A(n);
+    for(int i = 0; i < n; i++){
+        cin >> A[i];
+    }
+    int m; cin >> m;
+    int cost = 0; int ret = 0;
+    for(int i = 0, j = 0; i < n; i++){
+        while(j < n && cost + A[j] <= m){
+            cost += A[j++];
+        }
+        ret = max(ret, j - i);
+        cost -= A[i];
+    }
+    cout << ret << endl;
+    return 0;
+}
