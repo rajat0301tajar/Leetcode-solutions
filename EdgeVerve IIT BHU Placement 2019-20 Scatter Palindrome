@@ -1,0 +1,44 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+int main(){
+    string s; cin>>s;
+    int n = s.size(); if(n == 0) return 0;
+    vector<vector<int>>cnt(n, vector<int>(26,0));
+    cnt[0][s[0] - 'a']++;
+    for(int i = 1; i < n; i++){
+        for(char c = 'a'; c <= 'z'; c++)
+            cnt[i][c - 'a'] = cnt[i - 1][c - 'a'] + (s[i] == c);
+    }
+    int ret = 0;
+    for(int i = 0; i < n; i++){
+        for(int j = i; j < n; j++){
+            string temp = s.substr(i, j - i + 1);
+            int odd = 0; bool f = true;
+            vector<int> freq(26, 0);
+            for(int k = 0; k < 26; k++){
+                freq[k] = cnt[j][k] - ((i >= 1) ? cnt[i - 1][k] : 0);
+            }
+            for(int k = 0; k < 26; k++){
+                if(freq[k] % 2 == 1){
+                    odd++;
+                    if(odd > 1) {
+                        f = false;
+                        break;
+                    }
+                }
+            }
+            if(f == true){
+                //cout<<temp<<endl;
+                //set<char>st(temp.begin(), temp.end());
+                //for(auto c : st){
+                //    cout<<freq[c - 'a']<<" ";
+                //}
+                //cout<<endl;
+                ret++;
+            }
+        }
+    }
+    cout<<ret<<endl;
+    return 0;
+}
