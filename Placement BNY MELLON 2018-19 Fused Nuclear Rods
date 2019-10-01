@@ -1,0 +1,58 @@
+#include <bits/stdc++.h>
+using namespace std;
+void bfs(vector<vector<int>> &graph,vector<int> &visited,int source)
+{
+    queue<int> q;
+    q.push(source);
+    visited[source]=source;
+    while(!q.empty())
+    {
+        int curr=q.front();
+        q.pop();
+        for(int i=0;i<graph[curr].size();i++)
+        {
+            if(visited[graph[curr][i]]==-1)
+            {
+                q.push(graph[curr][i]);
+                visited[graph[curr][i]]=source;
+            }
+        }
+    }
+}
+
+int main() {
+	int n,m;
+	cin>>n;
+	cin>>m;
+	vector<vector<int>> graph(n);
+	for(int i=0;i<m;i++)
+	{
+	    int x,y;
+	    cin>>x;
+	    cin>>y;
+	    x--;
+	    y--;
+	    graph[x].push_back(y);
+	    graph[y].push_back(x);
+	}
+	int result=0;
+	vector<int> visited(n,-1);
+	for(int i=0;i<n;i++)
+	{
+	    if(visited[i]==-1)
+	    {
+	        bfs(graph,visited,i);
+	        int count=0;
+	        for(int j=0;j<n;j++)
+	        {
+	            if(visited[j]==i)
+	            {
+	                count++;
+	            }
+	        }
+	        result+=ceil(sqrt(count));
+	    }
+	}
+	cout<<result<<endl;
+	return 0;
+}
