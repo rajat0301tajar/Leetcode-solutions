@@ -1,0 +1,34 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+vector<int>A;
+int main(){
+    int n; cin >> n;
+    A.resize(n);
+    int sum = 0;
+    for(int i = 0; i < n; i++){
+        A[i] = i + 1;
+        sum += A[i];
+    }
+    if(sum % 2 == 1) {
+        cout<<0<<endl;
+        return 0;
+    }
+    int dp[sum / 2 + 1][n];
+    memset(dp, 0, sizeof(dp));
+    // dp[i][j] = no of ways to form sum i using some subset of A[0...j]
+    dp[1][0] = 1;
+    for(int i = 0; i < n; i++){
+        dp[0][i] = 1;
+    }
+    for(int i = 2; i <= sum / 2; i++){
+        dp[i][0] = 0;
+    }
+    for(int i = 0; i <= sum / 2; i++){
+        for(int j = 1; j < n; j++){
+            dp[i][j] = dp[i][j - 1] + (i >= A[j] ? dp[i - A[j]][j - 1] : 0);
+        }
+    }
+    cout<<dp[sum / 2][n - 1] / 2<<endl;
+    return 0;
+}
