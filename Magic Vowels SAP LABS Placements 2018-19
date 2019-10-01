@@ -1,0 +1,43 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+int main(){
+    string s; cin >> s;
+    int n = s.size();
+    int dp[n][5];
+    // dp[i][c] = length of longest partial magical subsequence ending at index i
+    // and ending at char c.
+    memset(dp, 0, sizeof(dp));
+    vector<int> A(n);
+    for(int i = 0; i < n; i++){
+        if(s[i] == 'a') A[i] = 0;
+        if(s[i] == 'e') A[i] = 1;
+        if(s[i] == 'i') A[i] = 2;
+        if(s[i] == 'o') A[i] = 3;
+        if(s[i] == 'u') A[i] = 4;
+    }
+    for(int i = 0; i < 5; i++){
+        dp[0][i] = (A[0] == i);
+    }
+    for(int i = 1; i < n; i++){
+        for(int p = 0; p < 5; p++){
+            if(A[i] == p){
+                dp[i][p] = 1 + dp[i - 1][p];
+                if(p != 0){
+                    dp[i][p] = max(dp[i][p], 1 + dp[i - 1][p - 1]);
+                }
+            }
+            else{
+                dp[i][p] = dp[i - 1][p];
+            }
+        }
+    }
+    for(int i = 0; i < n; i++){
+        cout<<s.substr(0, i + 1)<<" "<<"i = "<<i<<endl;
+        for(int p = 0; p < 5; p++)
+            cout<<dp[i][p]<<" ";
+        cout<<endl;
+    }
+    cout<<dp[n - 1][4]<<endl;
+    return 0;
+}
