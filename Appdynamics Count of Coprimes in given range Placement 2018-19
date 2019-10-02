@@ -1,0 +1,61 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+int not_coprime(int n, int r, int64 mul[1100], bool sign[1100], int num){
+    int ret = 0;
+    for(int mask = 1; mask < num; mask++){
+        int x = (sign[mask] == 0 ? 1 : -1) * (r / mul[mask]);
+        ret += x;
+    }
+    return ret;
+}
+int main(){
+    int n; cin >> n;
+    // --------------------------------------
+    int64 mul[1100]; bool sign[1100] = {false};
+    vector<int>p;// stores prime
+    int temp = n;
+    for(int i = 2; i * i <= n; i++){
+        if(temp %  i == 0){
+            p.push_back(i);
+            while(temp % i == 0){
+                temp /= i;
+            }
+        }
+    }
+
+    if(temp > 1){
+        p.push_back(temp);
+    }
+
+    int num = (1 << p.size());
+    for(int mask = 1; mask < num; mask++){
+        int temp = mask;
+        int cnt = 0;
+        int idx = p.size() - 1;
+        int prod = 1;
+        while(temp > 0){
+            if(temp & 1){
+                cnt++;
+                prod *= p[idx];
+            }
+            idx--;
+            temp >>= 1;
+        }
+        mul[mask] = prod;
+        if(cnt % 2 == 0) sign[mask] = true;
+    }
+
+    // -----------------------1--------------------------
+    int L = 1; L--;
+    int R = 100;
+    // ans = f(R) - f(L - 1)
+    // where f(x) = no of integers b/w [1,x] being co-prime with n
+    // f(x) = x - g(x)
+    // where g(x) = no. of integers not co-prime with n b/w [1,x]
+    int ret1 = R - not_coprime(n, R, mul, sign, num);
+    int ret2 = L - not_coprime(n, L, mul, sign, num);
+    int ret = ret1 - ret2;
+    cout<< ret << endl;
+    return 0;
+}
