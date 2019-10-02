@@ -1,0 +1,45 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+int main(){
+    int T; cin >> T;
+    while(T--){
+        int n; cin >> n;
+        vector<int> A(n);
+        for(int i = 0; i < n; i++){
+            cin >> A[i];
+        }
+        int dp[n + 1];
+        //dp[i] minimum no of ladders needed to reach floor i.
+        dp[0] = 0;
+        /*for(int i = 1; i <= n; i++){
+                dp[i] = 1 << 30;
+            for(int j = 0; j < i; j++){
+                if(j + A[j] >= i)
+                dp[i] = min(dp[i], 1 + dp[j]);
+            }
+        }*/
+        // 1 2 3 1 1 ---> ()
+        int cnt = 0, mx = 0, max_reachable_from_here = 0;
+        for(int i = 0; i <= n; i++){
+            max_reachable_from_here = max(max_reachable_from_here,
+                                          ((i < n) ? i + A[i] : 0));
+            dp[i] = cnt;
+            if(i == mx){
+                cnt++;
+                mx = max_reachable_from_here;
+            }
+        }
+        int q; cin >> q;
+        vector<int>ret;
+        while(q--){
+            int floor; cin >> floor;
+            ret.push_back(dp[floor]);
+        }
+        for(int i = 0; i < ret.size(); i++){
+            cout<< ret[i]<<" ";
+        }
+        cout<<endl;
+    }
+    return 0;
+}
