@@ -1,0 +1,69 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+const int maxn = 1e3 + 7;
+pair<pair<int, int>, int> Z[maxn];
+int step;
+int rnk[maxn][maxn];
+void SORT(int n, int j){
+	sort(Z, Z + n);
+	fill(rnk[j], rnk[j] + n, 0);
+	for(int i = 0; i < n; i++){
+		int idx = Z[i].second;
+		if(i == 0){ rnk[j][idx] = 0; continue;}
+		rnk[j][idx] = rnk[j][Z[i - 1].second];
+		if(Z[i].first != Z[i - 1].first) rnk[j][idx]++;
+	}
+}
+vector<int> suffixArray(string s){
+	int n = s.size();
+	s += "$";
+	for(int i = 0; i <= n; i++){
+		Z[i] = make_pair(make_pair(s[i], 0), i);
+	}
+	SORT(n + 1, 0);
+	int j;
+	for(j = 0; (1 << j) <= n; j++){
+		for(int i = 0; i <= n; i++){
+			int next = i + (1 << j);
+			Z[i] = make_pair(make_pair(rnk[j][i], next > n ? 0 : rnk[j][next]), i);
+		}
+		SORT(n + 1, j + 1);
+
+	}
+	step = j - 1; cout << "step = " << step << endl;
+	vector<int>S;
+	for(int i = 0; i <= n; i++){
+		S.push_back(Z[i].second);
+	}
+	return S;
+}
+int lcp(int i, int j, int n){
+    if(i == j) return n - i;
+    int ret = 0;
+    for(int x = step; x >= 0; x--){
+        if(rnk[x][i] == rnk[x][j]){
+            ret += (1 << x);
+            i = i + (1 << x);
+            j = j + (1 << x);
+        }
+    }
+    return ret;
+}
+int main(){
+	string s; cin >> s;
+	vector<int>S = suffixArray(s);
+	for(int i = 0; i < S.size(); i++){
+		cout<< S[i]<<" ";
+	}
+	cout << endl;
+    for(int i = 0; i < s.size(); i++){
+        cout << "i = "<<i<<" "<<lcp(0, i, s.size()) << endl;
+    }
+    int ret = 0;
+	for(int i = 0; i < s.size(); i++){
+        ret += lcp(0,i,s.size());
+	}
+	cout << "answer : "<<ret<<endl;
+	return 0;
+}
