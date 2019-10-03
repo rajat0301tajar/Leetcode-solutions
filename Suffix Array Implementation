@@ -1,0 +1,47 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+const int maxn = 6e5 + 7;
+pair<pair<int, int>, int> Z[maxn]; // array of z_k and k
+int rnk[maxn];                     // ranks of the elements
+
+void SORT(int n){
+    sort(Z, Z + n);
+    fill(rnk, rnk + n, 0);
+
+    for(int i = 0; i < n; i++){
+        int idx = Z[i].second;
+        if(i == 0){ rnk[idx] = 0; continue; }
+        rnk[idx] = rnk[ Z[i - 1].second ]; // rnk of previous element
+        if(Z[i].first != Z[i - 1].first) rnk[idx]++; // if you're worse then you're of worse (higher) rnk
+    }
+}
+vector<int> SA(string s){
+    int n = s.size(); s += "$"; // add dummy character
+    for(int i = 0; i <= n; i++){
+        Z[i] = make_pair(make_pair(s[i], 0), i);
+    }
+    SORT(n + 1);
+    for(int j = 0; (1 << j) <= n; j++){ // pair of strings of length 2^j each
+        for(int i = 0; i <= n; i++){
+            int next = i + (1 << j);
+            Z[i] = make_pair(make_pair(rnk[i], (next > n) ? 0 : rnk[next]), i);
+        }
+        SORT(n + 1);
+    }
+    vector<int> S;
+    for(int i = 0; i <= n; i++){
+        S.push_back(Z[i].second); //construct Suffix array from final Z array.
+    }
+    return S;
+}
+int main(){
+    string s;
+    cin >> s;
+    vector<int> S = SA(s);
+    for(int i = 0; i < S.size(); i++){
+        cout<< S[i]<< " ";
+    }
+    cout<< endl;
+    return 0;
+}
