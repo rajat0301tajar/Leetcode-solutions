@@ -1,0 +1,23 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+int main(){
+    int T; cin >> T;
+    while(T--){
+        int n, k; cin >> n >> k;
+        string ret = "";
+        int sum = 0;
+        int cnt = 0;
+        for(int x = 1; x <= 26; x++){
+           if(sum == k || cnt == n) break;
+           while((int64)26 * (n - cnt - 1) >= (k - sum - x)){
+                ret += ('a' + (x - 1));
+                sum += x;
+                cnt++;
+                if(sum == k) break;
+           }
+        }
+        cout << ret<< endl;
+    }
+    return 0;
+}
