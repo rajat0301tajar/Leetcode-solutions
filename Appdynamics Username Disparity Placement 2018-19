@@ -65,5 +65,11 @@ int main(){
         ret += lcp(0,i,s.size());
 	}
 	cout << "answer : "<<ret<<endl;
+	vector <int > H; // Longest Prefix Suffix Array.
+	H.push_back(0);
+	for(int i = 1; i < S.size(); i++){
+        H.push_back(lcp(S[i - 1], S[i], s.size()));
+	}
+	for(auto x : H) cout << x <<" ";
 	return 0;
 }
