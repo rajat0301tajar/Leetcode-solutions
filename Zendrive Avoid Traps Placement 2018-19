@@ -54,7 +54,7 @@ int main(){
         }
         cout << endl;
         for(int j = 0; j < n - 1; j++){
-            if(checkSpecial(j, r1, r2) && s[j] != '*'){
+            if(checkSpecial(j + 1, r1, r2) && s[j] != '*'){
                 for(int x : {1, 2, sum[j + 1]}){
                     if(j + x < n){
                         dp[j + x] = min(dp[j + x], 1 + dp[j]);
