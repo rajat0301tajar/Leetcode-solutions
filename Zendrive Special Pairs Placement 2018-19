@@ -1,0 +1,56 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+const int nmax = 918;
+bool prime[1000];
+void sieve(){
+    int n = nmax + 1;
+    fill(prime, prime + 1000, true);
+    prime[0] = false; prime[1] = false;
+    for(int i = 2; i < n; i++){
+        if(prime[i]){
+            for(int p = 2 * i; p <= n; p += i){
+                prime[p] = false;
+            }
+        }
+    }
+}
+string to_string(int n){
+    stringstream ss;
+    ss << n;
+    return ss.str();
+}
+bool comp(string x, string y){
+    if(x.size() < y.size()) return true;
+    if(x.size() > y.size()) return false;
+    int n = x.size();
+    for(int i = 0; i < n; i++){
+        if(x[i] == y[i]) continue;
+        else
+            return x[i] < y[i];
+    }
+    return true;
+}
+int main(){
+   // cout << comp("59", "39");
+    string n; cin >> n;
+    int sz = n.size();
+    sieve();
+    int ret = 0;
+    for(int i = 2; i <= nmax; i++){
+        if(!prime[i]) continue;
+        int l = 0; int r = i;
+
+        bool show = false;
+        while(l < r){
+            l++;
+            r--;
+            if(!comp(to_string(l),n) || !comp(to_string(r),n) || l == r) continue;
+            show = true;
+            ret++;
+        }
+        if(show) cout << i <<endl;
+    }
+    cout << ret << endl;
+    return 0;
+}
