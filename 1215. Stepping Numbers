@@ -16,4 +16,30 @@ Output: [0,1,2,3,4,5,6,7,8,9,10,12,21]
 Constraints:
 
     0 <= low <= high <= 2 * 10^9
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    typedef long long int64;
+    vector<int> ret;
+    void dfs(int64 cur, int low, int high){
+        if(cur > high) return;
+        if(cur >= low) ret.push_back(cur);
+        if(cur == 0){
+            for(int i = 1; i <= 9; i++){
+                dfs(cur * 10 + i, low, high);
+            }
+        }
+        else{
+            int last = cur % 10;
+            for(int i = max(last - 1, 0); i <= min(last + 1, 9); i++){
+                if(i == last) continue;
+                dfs(cur * 10 + i, low, high);
+            }
+        }
+    }
+    vector<int> countSteppingNumbers(int low, int high) {
+        dfs(0, low, high);
+        sort(ret.begin(), ret.end());
+        return ret;
+    }
+};
