@@ -1,0 +1,47 @@
+
+
+Given a string s and an integer k, find out if the given string is a K-Palindrome or not.
+
+A string is K-Palindrome if it can be transformed into a palindrome by removing at most k characters from it.
+
+ 
+
+Example 1:
+
+Input: s = "abcdeca", k = 2
+Output: true
+Explanation: Remove 'b' and 'e' characters.
+
+ 
+
+Constraints:
+
+    1 <= s.length <= 1000
+    s has only lowercase English letters.
+    1 <= k <= s.length
+---------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    bool isValidPalindrome(string s, int k) {
+        int n = s.size();
+        int dp[n][n];
+        string t = s;
+        reverse(t.begin(), t.end());
+        memset(dp, 0, sizeof(dp));
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+                if(s[i] == t[j]){
+                    if(i >= 1 && j >= 1)
+                    dp[i][j] = max(dp[i][j], 1 + dp[i - 1][j - 1]);
+                    else 
+                        dp[i][j] = 1;
+                }
+                else{
+                    dp[i][j] = max(j >= 1 ? dp[i][j - 1] : 0, i >= 1 ? dp[i - 1][j] : 0);
+                }
+            }
+        }
+        int ret = n - dp[n - 1][n - 1];
+        return ret <= k;
+    }
+};
