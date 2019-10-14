@@ -10,6 +10,33 @@ Output:
   [2,1,1]
 ]
 --------------------------------------------------------------------------------------------------------------------------
+BETTER APPROACH : 
+class Solution {
+public:
+    vector<vector<int>>ret;
+    vector<int>A;
+    void dfs(int u, int mask, int n, int path[], int idx){
+        if(mask == ((1 << n) - 1)){
+            vector<int>v(path, path + idx);
+            ret.push_back(v);
+            return;
+        }
+        for(int i = 0; i < n; i++){
+            if((mask >> i) & 1 == 1) continue;
+            if(i > 0 && A[i] == A[i - 1] && (mask & (1 << (i - 1))) == 0) continue;
+            path[idx] = A[i];
+            dfs(i, (mask | (1 << i)), n, path, idx + 1);
+        }
+    }
+    vector<vector<int>> permuteUnique(vector<int>& v) {
+        this->A = v;
+        sort(A.begin(), A.end());
+        int n = A.size(); int path[100000]; 
+        dfs(0, 0, n, path, 0);
+        return ret;
+    }
+};
+
 class Solution {
 public:
     vector<vector<int>>ret;
