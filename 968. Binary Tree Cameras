@@ -1,0 +1,51 @@
+Given a binary tree, we install cameras on the nodes of the tree. 
+
+Each camera at a node can monitor its parent, itself, and its immediate children.
+
+Calculate the minimum number of cameras needed to monitor all nodes of the tree.
+
+ 
+
+Example 1:
+Input: [0,0,null,0,0]
+Output: 1
+Explanation: One camera is enough to monitor all nodes if placed as shown.
+
+Example 2:
+Input: [0,0,null,0,null,0,null,null,0]
+Output: 2
+Explanation: At least two cameras are needed to monitor all nodes of the tree. The above image shows one of the valid configurations of camera placement.
+
+
+Note:
+
+    The number of nodes in the given tree will be in the range [1, 1000].
+    Every node has value 0.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> solve(TreeNode *root){
+        if(root == NULL) return {0, 0, 999999};
+        vector<int> L = solve(root->left);
+        vector<int> R = solve(root->right);
+        int L12 = min(L[1], L[2]);
+        int R12 = min(R[1], R[2]);
+        int d0 = L[1] + R[1]; // root not covered.
+        int d1 = min(L[2] + R12, R[2] + L12); // root covered but bulb not placed here.
+        int d2 = 1 + min(L[0], L12) + min(R[0], R12);
+        return {d0, d1, d2};
+    }
+    int minCameraCover(TreeNode* root) {
+        vector<int> ret = solve(root);
+        return min(ret[1], ret[2]);
+    }
+};
