@@ -1,0 +1,39 @@
+Given a positive integer n, generate a square matrix filled with elements from 1 to n2 in spiral order.
+
+Example:
+
+Input: 3
+Output:
+[
+ [ 1, 2, 3 ],
+ [ 8, 9, 4 ],
+ [ 7, 6, 5 ]
+]
+----------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    vector<vector<int>> generateMatrix(int n) {
+        if(n == 0) return {};
+        vector<vector<int>>ret(n, vector<int>(n));
+        int dirs[4][2] = {{0,1},{1,0},{0,-1},{-1,0}};
+        int x = 0, y = 0, dir = 0;
+        bool visited[n][n]; memset(visited, false, sizeof(visited));
+        for(int i = 1; i <= n * n; i++){
+            ret[x][y] = i;
+            visited[x][y] = true;
+            int nx = x + dirs[dir][0];
+            int ny = y + dirs[dir][1];
+            if(nx < 0 || ny < 0 || nx >= n || ny >= n || visited[nx][ny]){
+                dir = (dir + 1) % 4;
+                x += dirs[dir][0];
+                y += dirs[dir][1];
+            }
+            
+            else{
+                x = nx; 
+                y = ny;
+            }
+        }
+        return ret;
+    }
+};
