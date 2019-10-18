@@ -2,7 +2,7 @@
 using namespace std;
 typedef long long int64;
 const int maxn = 6e5 + 7;
-pair<pair<int, int>, int> Z[maxn]; // array of z_k and k
+pair<pair<int, int>, int> Z[maxn]; // array of z_k and k --> Z --> {(rank pair)--> start index of suff.}
 int rnk[maxn];                     // ranks of the elements
 
 void SORT(int n){
