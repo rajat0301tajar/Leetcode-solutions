@@ -16,6 +16,100 @@ majorityChecker.query(0,5,4); // returns 1
 majorityChecker.query(0,3,3); // returns -1
 majorityChecker.query(2,3,2); // returns 2
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// MORE INTUITIVE QUERY FUNCTION: 
+#define MAX 90000
+class MajorityChecker {
+public:
+     vector<int>st;
+    vector<int>a;
+    unordered_map<int,vector<int>>pos;
+    int occurrences(int x, int l, int r){
+        if(pos.find(x) == pos.end()){
+            return 0;
+        }
+        vector<int> &v = pos[x];
+        auto iter_l = lower_bound(v.begin(), v.end(), l);
+        if(iter_l == v.end()) return 0;
+        auto iter_r = upper_bound(v.begin(), v.end(), r);
+        return iter_r - iter_l;
+    }
+    void build(int tidx, int lo, int hi){
+        if(lo == hi){
+            st[tidx] = a[lo];
+            return;
+        }
+        int mid = (lo + hi) / 2;
+        build(2 * tidx, lo, mid);
+        build(2 * tidx + 1, mid + 1, hi);
+        if(st[2 * tidx] != -1 && occurrences(st[2 * tidx], lo, hi) * 2 > hi - lo + 1){
+            st[tidx] = st[2 * tidx];
+        }
+        else if(st[2 * tidx + 1] != -1 && occurrences(st[2 * tidx + 1], lo, hi) * 2 > hi - lo + 1){
+            st[tidx] = st[2 * tidx + 1];
+        }
+    }
+    
+     pair<int, int> query(int tidx, int l, int r, int ql, int qr) {
+        if (l > qr || r < ql) {
+            return {-1,-1};
+        }
+        if (ql <= l && r <= qr) {
+            if (st[tidx] == -1) {
+                return {-1,-1};
+            }
+            int occ = occurrences(st[tidx], ql, qr);
+            if (occ * 2 > qr - ql + 1) {
+                return {st[tidx], occ};
+            }
+            else {
+                return {-1, -1};
+            }
+        }
+        int mid = (l + r) >> 1;
+        pair<int, int> res_l = query(tidx * 2, l, mid, ql, qr);
+        pair<int, int> res_r = query(tidx * 2 + 1, mid + 1, r, ql, qr);
+        if(res_l.first == -1){
+            if(res_r.second * 2 > qr - ql + 1){return res_r;}
+        }
+        if(res_r.first == -1){
+            if(res_l.second * 2 > qr - ql + 1){return res_l;}
+        }
+        if(res_r.first != -1 && res_r.first != -1){
+            if(res_r.second * 2 > qr - ql + 1) return res_r;
+            if(res_l.second * 2 > qr - ql + 1) return res_l;
+        }
+        return make_pair(-1, -1);
+    }
+    MajorityChecker(vector<int>& arr) {
+        for(int i = 0; i < arr.size(); i++){
+            a.push_back(arr[i]);
+            pos[arr[i]].push_back(i);
+        }
+       st = vector<int>(arr.size() * 4, -1);
+       
+        if(a.size() > 0){
+            build(1, 0, a.size() - 1);
+        }
+        /*for(int i = 0; i < 2 * a.size() ; i++){
+            cout<<st[i]<<" ";
+        }*/
+    }
+    
+    int query(int left, int right, int threshold) {
+        pair<int, int> ans = query(1, 0, a.size() - 1, left, right);
+        if(ans.second >= threshold){
+            return ans.first;
+        }
+        return -1;
+    }
+};
+
+/**
+ * Your MajorityChecker object will be instantiated and called as such:
+ * MajorityChecker* obj = new MajorityChecker(arr);
+ * int param_1 = obj->query(left,right,threshold);
+ */
+
 #define MAX 90000
 class MajorityChecker {
 public:
