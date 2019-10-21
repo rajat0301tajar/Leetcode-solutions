@@ -1,0 +1,71 @@
+You have a set of tiles, where each tile has one letter tiles[i] printed on it.  Return the number of possible non-empty sequences of letters you can make.
+
+ 
+
+Example 1:
+
+Input: "AAB"
+Output: 8
+Explanation: The possible sequences are "A", "B", "AA", "AB", "BA", "AAB", "ABA", "BAA".
+
+Example 2:
+
+Input: "AAABBC"
+Output: 188
+
+ 
+
+Note:
+
+    1 <= tiles.length <= 7
+    tiles consists of uppercase English letters.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    int result=0;
+    map<string,bool>visited;
+    int factorial(int n){
+        int f =1;
+        for(int i=1;i<=n;i++){
+            f*=i;
+        }
+        return f;
+    }
+    int findPermutationCount(string s){
+        int freq[256];
+        memset(freq,0,sizeof(freq));
+        for(auto x: s){
+            freq[x]++;
+        }
+        int f=1;
+        for(int i=0;i<256;i++){
+            f*=factorial(freq[i]);
+        }
+        int n= s.size();
+        return factorial(n)/f;
+    } 
+    void findCombinations(string tiles,string s,int r,int i,int idx){
+        // need to select r characters from n characters--> and add its contribution
+        int n=tiles.size();
+        if(i >= n)
+            return;
+        s[idx]= tiles[i];
+        if(idx == r-1 && visited[s.substr(0,r)]==false){
+            result += findPermutationCount(s.substr(0,r));
+            visited[s.substr(0,r)]=true;
+            //cout<<s.substr(0,r)<<endl;
+        }
+        
+        findCombinations(tiles,s,r,i+1,idx+1);
+        findCombinations(tiles,s,r,i+1,idx);
+    }
+    int numTilePossibilities(string tiles) {
+        sort(tiles.begin(),tiles.end());
+        int n=tiles.size();
+        string s(n+1,'.');
+        for(int c=1;c<=n;c++){
+           findCombinations(tiles,s,c,0,0);
+        }
+        return result;
+    }
+};
