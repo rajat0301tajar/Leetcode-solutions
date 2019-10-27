@@ -1,0 +1,180 @@
+Contractor Bunty Singh has acquired the tender to make roads on a large plot of marshy land. Given that the region is marshy, the Topological Survey of India has given an advisory map of locations where bridges are to be made.
+
+There are different types of bridges ranging 1 - 7, as described below:
+
+    N, S, E, W
+    N, S
+    E, W
+    N, E
+    S, E
+    S, W
+    N, W
+
+Here N: North, S: South, E: East, W: West.
+
+For every bridge the available characters imply the directions from which the bridge can be approached from (if entering into the bridge) or exited to (if exiting from the bridge). As an instance, for a bridge of type 1, one can enter into it/ leave from it, from North, South, East and West. The map is desribed as a matrix of a defined size (more info in input section)
+
+Thereafter, information about where to start construction is also provided. The start location is provided as an ordered pair (more info in input section)
+
+Bunty singh has limited building material. Having started construction from the location specified as above, he can cover only a limited number of bridges. This is specified as length of locations which can be covered.
+
+Since, every bridge is a future revenue collection site, and thus adds to the value of the tender. Further it is unknown as to which bridges will be undertook by the current contractor. Thus, to determine the fair value of the tender, the revenue department declares that all bridges reachable by the contractor, given his starting position and material constraints, shall be appointed a value of Rs. 1 Crore.
+
+The challenge is to determine the fair value for given contract map and resource constraint, in this case Bunty Singh's contraints, in Crores.
+
+Input Format
+
+Input of every testcase is as desribed below.
+
+The first line has an integer, T, describing the number of contracts in the current testcase.
+
+From the second line, T contracts follow.
+
+The first line of each contract has the following space-separated numbers: N M R C L
+
+They mean the following:
+
+    N: Number of location in the North-South direction
+    M: Number of locations in the East-West direction
+    R: Start Location number of along North-South direction (0-based indexing)
+    C: Start Location number along East-West direction (0-based indexing)
+    Basically (R,C) is the start location. And top left position of the map is marked (0,0)
+    L: Length of material available to the contractor.
+
+Following this line, every contract has N lines with M numbers to describe the map. The numbers in each line can range from (0-7, both inclusive). Here 1-7 mean the bridges, as desribed above, whereas 0 means there exists no bridge and that the location is unreachable.
+
+Constraints
+
+1 <= T <= 10 4 <= N <= 70 6 <= M <= 70 0 <= R < N 0 <= C < M 0 <= L <= (N + M)/2
+
+Output Format
+
+Print the respective answer for T test cases in T lines.
+
+Answer: value of the contract as desribed above.
+
+Sample Input 0
+
+1
+5 4 1 1 4
+0 2 5 3
+3 1 7 2
+0 4 6 2
+3 6 4 6
+1 0 0 2
+
+Sample Output 0
+
+9
+
+Explanation 0
+
+We notice that at (0,1) : 0th row and 1st col; this location has a bridge of type 2 that means we can go either north or south to/from this bridge. Now clearly, the region north of the bridge is undescribed in the contract, so the we can't approach north from (0,1). Whereas south of the bridge we have (1,1). At (1,1), the bridge type 1 is present, this means we can move in any direction from (1,1). That is we can go south from (0,1) as well as come from north to (1,1). Similarly, we can go north from (1,1) and come from south to (0,1).
+
+So beginning at (1,1), one can arrive at (0,1). So (0,1) is reachable bridge. Similarly, look for other reachable bridges.
+
+The possible reachable bridges starting at (1,1) within the given cost contraint are:
+
+0 2 5 3
+
+3 1 7 2
+
+0 4 6 2
+
+3 6 4 6
+
+1 0 0 2
+
+The count of which is 9. Since all reachable bridges have same valuation, the value of the contract is 9. And the output is 9.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+vector<vector<vector<int>>>dirs;
+int bfs(vector<vector<int>>& A, int n, int m, vector<int>start, int L){
+    queue<vector<int>>q;
+    bool visited[n][m]; memset(visited, false, sizeof(visited));
+    q.push(start); visited[start[0]][start[1]] = true;
+    int dist = 0;
+    int ret = 0;
+    while(!q.empty()){
+        int sz = q.size();
+        while(sz--){
+            auto temp = q.front();
+            q.pop(); ret++;
+            int x = temp[0];
+            int y = temp[1];
+            int dr = A[x][y]; //cout << " A[x][y] = " << A[x][y];
+            if(dist == L) return ret;
+            //for(auto dir : dirs[dr]){
+            for(int i = 0; i < dirs[dr].size(); i++){
+                auto dir = dirs[dr][i];
+                int nx = x + dir[0];
+                int ny = y + dir[1];
+                if(nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
+                if(A[nx][ny] == 0 || visited[nx][ny]) continue;
+                int temp_dir = A[nx][ny];
+                vector<vector<int>> st(dirs[temp_dir].begin(), dirs[temp_dir].end());
+                if(dir == (vector<int>){-1,0} && find(st.begin(), st.end(), (vector<int>){1,0}) == st.end()) 
+                    continue;
+                if(dir == (vector<int>){1,0} && find(st.begin(), st.end(), (vector<int>){-1,0}) == st.end()) continue;
+                if(dir == (vector<int>){0, 1} && find(st.begin(), st.end(), (vector<int>){0,-1}) == st.end()) continue;
+                if(dir == (vector<int>){0, -1} && find(st.begin(), st.end(), (vector<int>){0,1}) == st.end()) continue;
+                visited[nx][ny] = true;
+                if(dist == L - 1) continue;
+                //ret++;
+                q.push({nx, ny});                
+            }
+        }
+        //cout << endl;
+        dist++;
+    }
+    return ret;
+}
+int main() {
+    dirs.resize(8);
+    for(int i = 1; i < 8; i++){
+        if(i == 1){
+            dirs[i] = {{-1,0},{1,0},{0,1},{0,-1}};
+        }
+        if(i == 2){
+            dirs[i] = {{-1,0},{1,0}};
+        }
+        if(i == 3){
+            dirs[i] = {{0,1},{0,-1}};
+        }
+        if(i == 4){
+            dirs[i] = {{-1,0},{0,1}};
+        }
+        if(i == 5){
+            dirs[i] = {{1,0},{0,1}};
+        }
+        if(i == 6){
+            dirs[i] = {{1,0},{0,-1}};
+        }
+        if(i == 7){
+            dirs[i] = {{-1,0},{0,-1}};
+        }
+    }
+    int64 T; cin >> T;
+    while(T--){
+        int n, m, r, c, L;
+        cin >> n >> m >> r >> c >> L;
+        vector<vector<int>>A(n, vector<int>(m));
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                cin >> A[i][j];
+            }
+        }
+        if(r < 0 || c < 0 || r >= n || c >= m || A[r][c] == 0 || L == 0)
+            cout << 0 << endl;
+        else 
+        cout << bfs(A, n, m, {r, c}, L) << endl;
+    }
+    return 0;
+}
