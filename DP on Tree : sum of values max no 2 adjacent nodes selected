@@ -1,0 +1,37 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int maxn = 1e5 + 100;
+
+int v[maxn];
+int dp[maxn][2];
+
+vector<int> G[maxn];
+
+void dfs(int x, int parent){
+   for(int y : G[x]){
+      if(y == parent) continue;
+      dfs(y, x);
+   }
+   
+   int taking_x = v[x]. not_taking_x = 0;
+   
+   for(int y : G[x]){
+      if(y == parent) continue;
+      taking_x += dp[y][true];
+      not_taking_x += dp[y][false];
+   }
+   dp[x][true] = not_taking_x;
+   dp[x][false] = max(taking_x, not_taking_x);
+}
+
+int main(){
+  int n; cin >> n;
+  for(int i = 0; i < n; i++){
+      int x, y; cin >> x >> y;
+      G[x].push_back(y); G[y].push_back(x);
+  }
+  
+  dfs(1, -1);
+  cout << dp[1][false] << endl;
+  return 0;
+}
