@@ -75,7 +75,8 @@ public:
         dfs1(0, -1);
         dfs2(0, -1);
         for(int u = 0; u <= n; u++){
-            ret = max(ret, max(in[u], out[u]));
+            //ret = max(ret, max(in[u], out[u]));  // because of leaves.
+            ret = max(ret, (in[u] + out[u] - 1));  // both work u as root
         }
         return ret - 1;
     }
