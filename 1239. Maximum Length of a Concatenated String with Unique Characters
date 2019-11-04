@@ -1,0 +1,88 @@
+Given an array of strings arr. String s is a concatenation of a sub-sequence of arr which have unique characters.
+
+Return the maximum possible length of s.
+
+ 
+
+Example 1:
+
+Input: arr = ["un","iq","ue"]
+Output: 4
+Explanation: All possible concatenations are "","un","iq","ue","uniq" and "ique".
+Maximum length is 4.
+
+Example 2:
+
+Input: arr = ["cha","r","act","ers"]
+Output: 6
+Explanation: Possible solutions are "chaers" and "acters".
+
+Example 3:
+
+Input: arr = ["abcdefghijklmnopqrstuvwxyz"]
+Output: 26
+
+ 
+
+Constraints:
+
+    1 <= arr.length <= 16
+    1 <= arr[i].length <= 26
+    arr[i] contains only lower case English letters.
+
+-------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    vector<string> A;
+    map<pair<int, int>, int> dp;
+    int dfs(int idx, int mask){
+        //ret = max(ret, len);
+        if(dp.count({idx, mask})) return dp[{idx, mask}];
+        int ret = A[idx].size();
+        int mx = 0; 
+        int n = A.size();
+        for(int i = idx + 1; i < n; i++){
+            string temp = A[i]; bool f = false;
+            for(auto c : temp){
+                int x = c - 'a';
+                if(mask & (1 << x)) {
+                    f = true;
+                    break;
+                }
+            }
+            if(f == false){
+                int x = mask;
+                for(auto c : temp){
+                    x = (x | (1 << (c - 'a')));
+                }
+                mx = max(mx, dfs(i, x));
+            }
+            
+        }
+        ret += mx;
+        return dp[{idx, mask}] = ret;
+    }
+    int maxLength(vector<string>& a) {
+        int ret = 0; int n = a.size();
+        for(int i = 0; i < n; i++){
+            vector<int> cnt(26);
+            bool f = false;
+            for(auto c : a[i]){
+                cnt[c - 'a']++;
+                if(cnt[c - 'a'] > 1) {
+                    f = true;
+                    break;
+                }
+            }
+            if(!f) A.push_back(a[i]);
+        }
+        for(int i = 0; i < A.size(); i++){
+            int mask = 0;
+            for(auto c : A[i]){
+                mask |= (1 << (c - 'a'));
+            }
+            ret = max(ret, dfs(i, mask));
+        }
+        return ret;
+    }
+};
