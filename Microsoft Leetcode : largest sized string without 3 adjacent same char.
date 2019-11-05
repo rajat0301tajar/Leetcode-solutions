@@ -1,0 +1,46 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int64;
+int main(){
+    string s = "abaaaa";
+    int consecAcnt = 0, consecBcnt = 0, consecAstart = 0, consecAend = 0, consecBstart = 0, consecBend = 0;
+    int l = 0, r = 0;
+    int n = s.size();
+    int mx = 0; string str = "";
+    while(r < n){
+        if(s[r] == 'a'){
+            if(consecAcnt == 0){
+                consecAstart = r;
+            }
+            consecAend = r;
+            consecAcnt++;
+            consecBcnt = 0;
+        }
+        if(s[r] == 'b'){
+            if(consecBcnt == 0){
+                consecBstart = r;
+            }
+            consecBend = r;
+            consecBcnt++;
+            consecAcnt = 0;
+        }
+        r++;
+        while((consecAcnt == 3 || consecBcnt == 3) && l < n){
+            if(s[l] == 'a' && consecAcnt == 3 && l >= consecAstart && l <= consecAend){
+                consecAcnt--;
+            }
+            if(s[l] == 'b' && consecBcnt == 3 && l >= consecBstart && l <= consecBend){
+                consecBcnt--;
+            }
+            l++;
+        }
+        cout << "l = " << l << " r = " << r << " consec A = " << consecAcnt << " consec B = " << consecBcnt << endl;
+        if(mx < r - l){
+            mx = r - l;
+            str = s.substr(l, mx);
+        }
+
+    }
+    cout << str << " " << mx << endl;
+    return 0;
+}
