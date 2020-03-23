@@ -1,0 +1,47 @@
+There is a pizza with 3n slices of varying size, you and your friends will take slices of pizza as follows:
+
+    You will pick any pizza slice.
+    Your friend Alice will pick next slice in anti clockwise direction of your pick. 
+    Your friend Bob will pick next slice in clockwise direction of your pick.
+    Repeat until there are no more slices of pizzas.
+
+Sizes of Pizza slices is represented by circular array slices in clockwise direction.
+
+Return the maximum possible sum of slice sizes which you can have.
+
+ 
+
+Example 1:
+Input: slices = [1,2,3,4,5,6]
+Output: 10
+Explanation: Pick pizza slice of size 4, Alice and Bob will pick slices with size 3 and 5 respectively. Then Pick slices with size 6, finally Alice and Bob will pick slice of size 2 and 1 respectively. Total = 4 + 6.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+const int inf = 1 << 29;
+const int N = 510;
+int dp[2][N][N / 3];
+class Solution {
+public:
+    vector<int> A;
+    int n, first;
+    int solve(int pre, int pos, int rem){
+        if(pos == n) return rem == 0 && pre == first ? 0 : -inf;
+        if(dp[pre][pos][rem] >= 0) return dp[pre][pos][rem];
+        int ret = 0;
+        ret = max(ret, solve(0, pos + 1, rem)); // exclude.
+        if(rem > 0 && !pre){  // include./
+            ret = max(ret, A[pos] + solve(1, pos + 1, rem - 1));
+        }
+        return dp[pre][pos][rem] = ret;
+    }
+    int maxSizeSlices(vector<int>& slices) {
+        A = slices;
+        n = A.size();
+        int ret = 0;
+        // first tells about whether we have included last element or not.
+        for(first = 0; first < 2; first++){
+            memset(dp, -1, sizeof(dp));
+            ret = max(ret, solve(first, 0, n / 3));
+        }
+        return ret;
+    }
+};
