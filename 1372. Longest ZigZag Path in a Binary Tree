@@ -1,0 +1,45 @@
+Given a binary tree root, a ZigZag path for a binary tree is defined as follow:
+
+    Choose any node in the binary tree and a direction (right or left).
+    If the current direction is right then move to the right child of the current node otherwise move to the left child.
+    Change the direction from right to left or right to left.
+    Repeat the second and third step until you can't move in the tree.
+
+Zigzag length is defined as the number of nodes visited - 1. (A single node has a length of 0).
+
+Return the longest ZigZag path contained in that tree
+---------------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+// dp[node][0] = length of longest zig-zag path in left of node.
+// dp[node][1] = length of longest zig-zag path in right of node.
+// dp[node][0] = 1 + dp[node_left][1];
+// dp[node][1] = 1 + dp[node_right][0];
+// first calculate answer for child then answer for parent.
+class Solution {
+public:
+    unordered_map<TreeNode*,unordered_map<int, int>> dp;
+    int ans;
+    void dfs(TreeNode *root){
+        if(!root) return;
+        dfs(root->left);
+        dfs(root->right);
+        if(root->left)
+        dp[root][0] = 1 + dp[root->left][1];
+        if(root->right)
+        dp[root][1] = 1 + dp[root->right][0];
+        ans = max(ans, max(dp[root][0], dp[root][1]));
+    }
+    int longestZigZag(TreeNode* root) {
+        ans = 0;
+        dfs(root);
+        return ans;
+    }
+};
