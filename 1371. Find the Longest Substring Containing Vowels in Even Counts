@@ -1,0 +1,58 @@
+Given the string s, return the size of the longest substring containing each vowel an even number of times. That is, 'a', 'e', 'i', 'o', and 'u' must appear an even number of times.
+
+ 
+
+Example 1:
+
+Input: s = "eleetminicoworoep"
+Output: 13
+Explanation: The longest substring is "leetminicowor" which contains two each of the vowels: e, i and o and zero of the vowels: a and u.
+
+Example 2:
+
+Input: s = "leetcodeisgreat"
+Output: 5
+Explanation: The longest substring is "leetc" which contains two e's.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    int a, e, i, o, u;
+    void update(char c){
+        if(c == 'a'){
+            a ^= 1;
+        }
+        if(c == 'e'){
+            e ^= 1;
+        }
+        if(c == 'i'){
+            i ^= 1;
+        }
+        if(c == 'o'){
+            o ^= 1;
+        }
+        if(c == 'u'){
+            u ^= 1;
+        }
+    }
+    int findTheLongestSubstring(string s) {
+        a = 0, e = 0, i = 0, o = 0, u = 0;
+        int n = s.size();
+        map<int, int> mp;
+        int ans = 0;
+        for(int x = 0; x < n; x++){
+            update(s[x]);
+            //cout << a << " " << e << " " << i << " " << o << " " << u << endl;
+            int hash = u + 10 * o + 100 * i + 1000 * e + 10000 * a;
+            if(!a && !e && !i && !o && !u){
+                ans = x + 1;
+            }
+            if(mp.count(hash) > 0){
+                ans = max(ans, x - mp[hash]);
+            }
+            else{
+                mp[hash] = x;
+            }
+        }
+        return ans;
+    }
+};
