@@ -1,0 +1,55 @@
+Given an integer array of digits, return the largest multiple of three that can be formed by concatenating some of the given digits in any order.
+
+Since the answer may not fit in an integer data type, return the answer as a string.
+
+If there is no answer return an empty string.
+
+ 
+
+Example 1:
+
+Input: digits = [8,1,9]
+Output: "981"
+
+Example 2:
+
+Input: digits = [8,6,7,1,0]
+Output: "8760"
+---------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    string largestMultipleOfThree(vector<int>& digits) {
+        vector<pair<int, int>> A[3];
+        int n = digits.size();
+        vector<bool> flag(n, true);
+        sort(digits.begin(), digits.end(), greater<int>());
+        int sum = 0;
+        for(int i = 0; i < n; i++){
+            A[digits[i] % 3].push_back({digits[i], i});
+            sum += digits[i];
+        }
+        for(int i = 0; i < 3; i++){
+            sort(A[i].begin(), A[i].end());
+        }
+        int r = sum % 3;
+        if(r != 0){
+            if(A[r].size() >= 1){
+                flag[A[r][0].second] = false;
+            }
+            else if(A[3 - r].size() >= 2){
+                flag[A[3 - r][0].second] = flag[A[3 - r][1].second] = false;
+            }
+            else{
+                return "";
+            }
+        }
+        string ret = "";
+        for(int i = 0; i < n; i++){
+            if(flag[i]) ret += '0' + digits[i];
+        }
+        reverse(ret.begin(), ret.end());
+        while(ret.size() > 1 && ret.back() == '0') ret.pop_back();
+        reverse(ret.begin(), ret.end());
+        return ret;
+    }
+};
