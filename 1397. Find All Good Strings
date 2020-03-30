@@ -1,0 +1,104 @@
+Given the strings s1 and s2 of size n, and the string evil. Return the number of good strings.
+
+A good string has size n, it is alphabetically greater than or equal to s1, it is alphabetically smaller than or equal to s2, and it does not contain the string evil as a substring. Since the answer can be a huge number, return this modulo 10^9 + 7.
+
+ 
+
+Example 1:
+
+Input: n = 2, s1 = "aa", s2 = "da", evil = "b"
+Output: 51 
+Explanation: There are 25 good strings starting with 'a': "aa","ac","ad",...,"az". Then there are 25 good strings starting with 'c': "ca","cc","cd",...,"cz" and finally there is one good string starting with 'd': "da". 
+
+Example 2:
+
+Input: n = 8, s1 = "leetcode", s2 = "leetgoes", evil = "leet"
+Output: 0 
+Explanation: All strings greater than or equal to s1 and smaller than or equal to s2 start with the prefix "leet", therefore, there is not any good string.
+
+Example 3:
+
+Input: n = 2, s1 = "gx", s2 = "gz", evil = "x"
+Output: 2
+
+ 
+
+Constraints:
+
+    s1.length == n
+    s2.length == n
+    1 <= n <= 500
+    1 <= evil.length <= 50
+    All strings consist of lowercase English letters.
+--------------------------------------------------------------------------------------------------------------------------------
+const int MOD = 1e9 + 7;
+const int N = 500 + 10;
+const int M = 50 + 10;
+int dp[N][M][2];
+
+class Solution {
+public:
+    string s, t;
+    vector<int> f;
+    vector<int> kmp(const string &t){
+        int m = t.size();
+        vector<int> f(m);
+        f[0] = 0;
+        int len = 0;
+        int i = 1;
+        while(i < m){
+            if(t[i] == t[len]){
+                len++;
+                f[i] = len;
+                i++;
+            }
+            else{
+                if(len != 0)
+                    len = f[len - 1];
+                else{
+                    f[i] = 0;
+                    i++;
+                }
+            }
+        }
+        return f;
+    }
+    
+    bool contain(const string &s, const string &t){
+        int n = s.size(), m = t.size();
+        for(int i = 0; i + m <= n; i++){
+            if(s.substr(i, m) == t) return true;
+        }
+        return false;
+    }
+    
+    int solve(int pos, int matched, int tight){
+        if(matched == t.size()) return 0;
+        if(pos == s.size()) return 1;
+        int &ret = dp[pos][matched][tight];
+        if(ret >= 0) return ret;
+        ret = 0;
+        for(int i = 0; i < 26; i++){
+            if(tight && i > s[pos] - 'a') continue;
+            int nxt_tight = tight && i == s[pos] - 'a';
+            int nxt_matched = matched;
+            while(nxt_matched > 0 && t[nxt_matched] - 'a' != i) nxt_matched = f[nxt_matched - 1];
+            if(t[nxt_matched] - 'a' == i) nxt_matched += 1;
+            ret = (ret + solve(pos + 1, nxt_matched, nxt_tight)) % MOD;
+        }
+        return ret;
+    }
+    
+    int findGoodStrings(int n, string s1, string s2, string evil) {
+        this->f = kmp(evil);
+        memset(dp, -1, sizeof(dp));
+        s = s2; t = evil;
+        int B = solve(0, 0, 1);   // solve gives answer for less than or equal to.
+        memset(dp, -1, sizeof(dp));
+        s = s1; t = evil;
+        int A = solve(0, 0, 1);
+        int ret = (B + MOD - A) % MOD;
+        if(!contain(s1, evil)) ret = (ret + 1) % MOD;
+        return ret;
+    }
+};
